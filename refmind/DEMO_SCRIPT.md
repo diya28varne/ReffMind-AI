@@ -12,7 +12,7 @@
 ```powershell
 # Terminal 1 — backend
 cd refmind\backend
-.\venv\Scripts\uvicorn app.main:app --reload --port 8000
+.\venv\Scripts\uvicorn app.main:app --reload --port 8001
 
 # Terminal 2 — frontend
 cd refmind\frontend

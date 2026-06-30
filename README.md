@@ -8,9 +8,10 @@ This repo is part of the **IBM SkillsBuild AI Builders Challenge** and is your s
 
 ## 🚀 Getting Started
 - Check out the **TORCS Lab** → this is the **May Challenge lab**
-- Check out the **Football Lab** → this is the **June Challenge lab** 
-- Work through the folders and try things out as you go  
-- Use `RESULTS.md` in your fork to track what you learn  
+- Check out the **Football Lab** → this is the **June Challenge lab**
+- **RefMind** (June challenge submission) → [`refmind/README.md`](refmind/README.md) — AI referee explainability demo
+- Work through the folders and try things out as you go
+- Use `RESULTS.md` in your fork to track what you learn
 
 ---
 

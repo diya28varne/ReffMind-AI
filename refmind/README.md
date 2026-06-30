@@ -4,52 +4,115 @@
 
 **Don't just watch the match. Understand the moment.**
 
-RefMind is an AI experience for the IBM SkillsBuild AI Builders Challenge. Users vote on controversial referee decisions *before* seeing the answer — then get fan splits, IFAB-grounded rule explanations, camera blind-spot analysis, and an honest verdict.
+RefMind is an AI referee explainability platform built for the **IBM SkillsBuild AI Builders Challenge**. Fans vote on controversial decisions *before* seeing the answer — then get fan splits, IFAB-grounded rule explanations, camera blind-spot analysis, voice narration, and an honest verdict with visible uncertainty.
 
-## Stack
+---
 
-| Layer | Tool |
-|-------|------|
-| Frontend | React + Tailwind + Vite |
-| Backend | FastAPI |
-| LLM | IBM Granite (via watsonx.ai) |
-| RAG | LangChain + Chroma |
-| PDF ingestion | Docling |
+## Submission checklist
+
+| Requirement | Location |
+|-------------|----------|
+| **Source code** | This folder (`refmind/`) — backend + frontend |
+| **README** | `refmind/README.md` (this file) |
+| **IBM tools used** | [IBM tools section](#ibm-tools-used) below |
+| **Setup instructions** | [Quick start](#quick-start) below |
+| **Screenshots & demo** | [`docs/DEMO.md`](docs/DEMO.md) + [`docs/screenshots/`](docs/screenshots/) |
+
+---
+
+## What RefMind does
+
+1. **Vote first** — YES/NO before any spoilers (reduces hindsight bias)
+2. **Fan split reveal** — see how the crowd voted
+3. **Four perspectives** — fan, rule, referee, camera (with voice reader)
+4. **Emotion vs rule meter** — fan vote vs AI confidence
+5. **What the camera missed** — OG broadcast scene + link to exact clip moment
+6. **Ask the Ref** — incident-scoped Q&A (custom prompts per incident)
+7. **Honest verdict** — Correct / Defensible but debatable / Likely wrong + confidence %
+8. **Transparency** — clear disclaimer that official VAR data is not public
+
+### Five demo incidents
+
+| ID | Incident |
+|----|----------|
+| `wc2022-montiel-handball` | Montiel handball — World Cup Final 2022 |
+| `wc2010-suarez-handball` | Suárez goal-line handball — Ghana 2010 |
+| `euro2020-england-penalty` | Sterling penalty — England vs Denmark |
+| `wc2022-saudi-offside` | Lautaro offside — Argentina vs Saudi Arabia |
+| `ucl-2019-llorente-handball` | Llorente handball — Ajax vs Tottenham 2019 |
+
+---
+
+## IBM tools used
+
+| IBM tool | Role in RefMind | Code / data |
+|----------|-----------------|-------------|
+| **IBM Granite** | Generates rule-grounded analysis, verdict reasoning, and Ask the Ref answers via watsonx.ai | `backend/app/services/granite.py`, `analyzer.py`, `ask_ref.py` |
+| **Docling** | Parses official IFAB Laws of the Game PDF into structured text for ingestion | `backend/app/ingest/ingest_rules.py` |
+| **LangChain** | Chunks rule text, builds embeddings, retrieves relevant IFAB passages for RAG | `backend/app/services/rag.py` |
+| **Chroma** | Vector store for retrieved rule snippets at analysis time | `backend/data/chroma/` (created on ingest) |
+
+**Supporting stack (not IBM):** React + Tailwind + Vite (frontend), FastAPI (backend).
+
+**Demo mode:** Works without watsonx credentials — uses structured fallback responses so judges can run the full UI locally. Set `DEMO_MODE=false` and add watsonx keys for live Granite.
+
+---
 
 ## Quick start
 
-### 1. Backend
+### Prerequisites
 
-```bash
-cd refmind/backend
-python -m venv venv
+- Python 3.11+
+- Node.js 18+
+- (Optional) IBM watsonx.ai API key + project ID for live Granite
 
-# Windows
-venv\Scripts\activate
+### Option A — One-click demo (Windows)
 
-pip install -r requirements.txt
-copy .env.example .env
-
-# Start API (demo mode works without API keys)
-uvicorn app.main:app --reload --port 8000
+```powershell
+cd refmind\scripts
+start-demo.cmd
 ```
 
-### 2. Frontend
+Opens **http://localhost:5173/?demo=wc2022-montiel-handball**
 
-```bash
-cd refmind/frontend
+### Option B — Manual setup
+
+**1. Backend** (port **8001**)
+
+```powershell
+cd refmind\backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+uvicorn app.main:app --reload --port 8001
+```
+
+**2. Frontend** (port **5173**)
+
+```powershell
+cd refmind\frontend
 npm install
 npm run dev
 ```
 
 Open **http://localhost:5173**
 
-### 3. Connect Watsonx Granite (Hour 3)
+### Demo URLs
 
-1. Open [watsonx.ai](https://dataplatform.cloud.ibm.com/) and create a **project**.
-2. Copy your **Project ID** from the project settings.
-3. Create an **API key**: IBM Cloud → Manage → Access (IAM) → API keys → Create.
-4. Edit `backend/.env`:
+```
+http://localhost:5173/?demo=wc2022-montiel-handball
+http://localhost:5173/?demo=wc2010-suarez-handball
+http://localhost:5173/?demo=euro2020-england-penalty
+http://localhost:5173/?demo=wc2022-saudi-offside
+http://localhost:5173/?demo=ucl-2019-llorente-handball
+```
+
+### Connect IBM Granite (watsonx.ai)
+
+1. Create a project at [watsonx.ai](https://dataplatform.cloud.ibm.com/)
+2. Create an IBM Cloud API key (IAM → API keys)
+3. Edit `backend/.env`:
 
 ```env
 WATSONX_API_KEY=your_ibm_cloud_api_key
@@ -58,119 +121,136 @@ WATSONX_URL=https://us-south.ml.cloud.ibm.com
 DEMO_MODE=false
 ```
 
-5. Test the connection:
+4. Test:
 
-```bash
-cd refmind/backend
+```powershell
+cd refmind\backend
 python -m app.scripts.test_granite
+curl http://127.0.0.1:8001/health/granite
 ```
 
-6. Restart the API server, then check:
+When live, responses include `"demo_mode": false`.
 
-```bash
-curl http://127.0.0.1:8000/health/granite
-```
+---
 
-When live, `/health` returns `"granite_live": true` and analysis responses include `"demo_mode": false`.
+## Ingest IFAB rules (Docling + LangChain + Chroma)
 
-## Ingest IFAB rule PDFs (Docling)
-
-Official PDF already downloaded to `backend/data/rules/ifab-laws-2024-25.pdf`.
+Official PDF: `backend/data/rules/ifab-laws-2024-25.pdf`
 
 **Re-download** (if needed):
 
-```bash
-cd refmind/backend
+```powershell
+cd refmind\backend
 python -m app.ingest.download_rules
 ```
 
 **Ingest** (stop the API server first — Chroma file lock):
 
-```bash
-cd refmind/backend
+```powershell
+cd refmind\backend
 python -m app.ingest.ingest_rules
 ```
 
-Expected output: ~60 chunks tagged by topic (handball, offside, penalty foul, VAR).
+Expected: ~60 chunks tagged by topic (handball, offside, penalty, VAR). Docling uses `do_ocr=False` on the embedded-text IFAB PDF to avoid memory issues on laptops.
 
-Docling uses `do_ocr=False` because IFAB PDFs have embedded text; OCR on the full double-page edition causes memory errors on laptops.
+---
 
-## Core loop
+## Core user flow
 
 ```
-User votes YES/NO
-      ↓
+Opening quote + vote YES/NO
+        ↓
 Fan % reveal
-      ↓
-Rule explanation (RAG on IFAB)
-      ↓
-What the referee saw
-      ↓
-What the camera hid
-      ↓
-Honest verdict: Correct / Defensible but debatable / Likely wrong
+        ↓
+Four perspectives (fan / rule / ref / camera) + voice reader
+        ↓
+Emotion vs rule · Pressure on ref · OG scene · Why fans disagree
+        ↓
+Debate mode · Change your mind · Trust score · Final verdict
+        ↓
+Ask the Ref · Transparency note · Next incident
 ```
+
+---
 
 ## API endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/health` | API status + Granite mode |
+| GET | `/health/granite` | Granite connection test |
 | GET | `/incidents` | List incidents (no spoilers) |
 | GET | `/incidents/{id}` | Single incident for voting |
 | POST | `/incidents/{id}/vote` | Fan % after user vote |
-| POST | `/incidents/{id}/analyze` | Full AI analysis |
+| POST | `/incidents/{id}/analyze` | Full AI analysis + OG scene |
+| POST | `/incidents/{id}/mind-change` | Record vote flip after camera reveal |
+| POST | `/ask-ref` | Incident-scoped Q&A |
 
-## Team ownership
+---
 
-| Person | Owns |
-|--------|------|
-| AI & Backend | Docling ingestion, LangChain RAG, Granite prompts |
-| Data | `app/data/incidents.json` — add real incidents + fan % |
-| Frontend | React voting + reveal screens |
-| Demo & Pitch | 90-second judge script (see below) |
+## Screenshots & demo script
 
-## 90-second demo script
+- **Demo walkthrough & screenshot guide:** [`docs/DEMO.md`](docs/DEMO.md)
+- **90-second judge script:** [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md)
+- **Screenshot folder:** [`docs/screenshots/`](docs/screenshots/) — add PNG captures for your submission
 
-1. *"Everyone remember this handball in the World Cup?"* — show Argentina 2022 incident.
-2. *"You have 5 seconds — was it a handball? Vote now."*
-3. *"62% of fans said yes. You agreed with most people."*
-4. *"Here's what the referee actually saw — and why the rule says something different."*
-5. *"Here's what the broadcast camera physically couldn't show."*
-6. *"Our verdict: Defensible but genuinely debatable. Here's why two professional referees would disagree."*
-
-## MVP checklist
-
-- [x] 5 controversial incidents in JSON
-- [x] User voting screen
-- [x] Fan percentage reveal
-- [x] RAG on IFAB rules (seed + Docling PDF path)
-- [x] Referee perspective + camera blind-spot analysis
-- [x] Honest verdict with confidence level
-- [x] Demo mode (no API key required)
+---
 
 ## Project structure
 
 ```
 refmind/
+├── README.md                 # This file
+├── DEMO_SCRIPT.md            # 90-second pitch script
+├── docs/
+│   ├── DEMO.md               # Demo URLs + screenshot guide
+│   └── screenshots/          # Add submission screenshots here
+├── scripts/
+│   ├── start-demo.cmd        # Windows one-click launch
+│   ├── start-backend.cmd
+│   └── start-frontend.cmd
 ├── backend/
 │   ├── app/
-│   │   ├── main.py              # FastAPI routes
-│   │   ├── config.py
+│   │   ├── main.py           # FastAPI routes
 │   │   ├── data/
-│   │   │   ├── incidents.json   # 5 demo incidents
-│   │   │   └── seed_rules.py    # IFAB rule snippets
-│   │   ├── ingest/
-│   │   │   └── ingest_rules.py  # Docling PDF → Chroma
+│   │   │   ├── incidents.json
+│   │   │   ├── og_scenes.py
+│   │   │   └── seed_rules.py
+│   │   ├── ingest/           # Docling PDF ingestion
 │   │   └── services/
-│   │       ├── analyzer.py      # Granite reasoning
-│   │       ├── incidents.py
-│   │       └── rag.py           # LangChain + Chroma
+│   │       ├── granite.py    # IBM Granite
+│   │       ├── rag.py        # LangChain + Chroma
+│   │       ├── analyzer.py
+│   │       └── ask_ref.py
 │   └── requirements.txt
 └── frontend/
+    ├── public/scenes/        # OG broadcast thumbnails
     └── src/
         ├── App.jsx
-        └── components/
-            ├── VotingScreen.jsx
-            └── RevealScreen.jsx
+        ├── components/       # Vote + reveal UI
+        └── data/askRefStarters.js
 ```
+
+---
+
+## MVP checklist
+
+- [x] 5 controversial incidents
+- [x] Vote-before-reveal flow
+- [x] Fan percentage reveal
+- [x] RAG on IFAB rules (Docling + LangChain + Chroma)
+- [x] IBM Granite analysis (with demo fallback)
+- [x] Referee + camera perspective
+- [x] OG broadcast scenes with timestamped clip links
+- [x] Voice reader (Read to me)
+- [x] Ask the Ref (per-incident prompts)
+- [x] Honest verdict + confidence
+- [x] Transparency disclaimer
+- [x] Future scope teaser (first incident)
+- [x] Demo mode (no API key required)
+
+---
+
+## License & attribution
+
+Built for IBM SkillsBuild AI Builders Challenge. IFAB Laws PDF used for rule grounding. OG scene thumbnails sourced from official match highlight clips on YouTube (see `backend/app/data/og_scenes.py`).

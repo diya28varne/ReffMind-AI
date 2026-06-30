@@ -101,11 +101,22 @@ export default function App() {
         )}
 
         {phase === PHASE.ERROR && (
-          <div className="text-center py-20">
-            <p className="text-accent-red mb-4">{error}</p>
-            <p className="text-gray-500 text-sm">
-              Could not reach the RefMind API. If running locally, start the backend on port 8001.
-            </p>
+          <div className="text-center py-20 space-y-4">
+            <p className="text-accent-red">{error}</p>
+            {window.location.hostname === 'localhost' ? (
+              <p className="text-gray-500 text-sm">
+                Local mode: run <code className="text-gray-400">refmind\scripts\start-demo.cmd</code> (backend
+                8001 + frontend 5173).
+              </p>
+            ) : (
+              <p className="text-gray-500 text-sm">Try refreshing the page.</p>
+            )}
+            <a
+              href="https://hands-on-labs.vercel.app/?demo=wc2022-montiel-handball"
+              className="inline-block text-accent-gold underline text-sm"
+            >
+              Open always-on live demo →
+            </a>
           </div>
         )}
 

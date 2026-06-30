@@ -1,10 +1,20 @@
 const BASE = import.meta.env.VITE_API_URL || '/api'
 
 async function request(path, options = {}) {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
-    ...options,
-  })
+  let res
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      headers: { 'Content-Type': 'application/json', ...options.headers },
+      ...options,
+    })
+  } catch {
+    const live = 'https://hands-on-labs.vercel.app/?demo=wc2022-montiel-handball'
+    throw new Error(
+      window.location.hostname === 'localhost'
+        ? 'Cannot reach the API. Run refmind\\scripts\\start-demo.cmd — or use the live demo.'
+        : `Connection problem. Try refreshing, or open the live demo: ${live}`,
+    )
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error(err.detail || `Request failed: ${res.status}`)

@@ -4,6 +4,12 @@
 
 **Don't just watch the match. Understand the moment.**
 
+### Always-on live demo (bookmark this)
+
+**https://hands-on-labs.vercel.app/?demo=wc2022-montiel-handball**
+
+Works 24/7 — no local servers, no `localhost`. `localhost:5173` only works while you run `scripts\start-demo.cmd` on your PC.
+
 RefMind is an AI referee explainability platform built for the **IBM SkillsBuild AI Builders Challenge**. Fans vote on controversial decisions *before* seeing the answer — then get fan splits, IFAB-grounded rule explanations, camera blind-spot analysis, voice narration, and an honest verdict with visible uncertainty.
 
 ---

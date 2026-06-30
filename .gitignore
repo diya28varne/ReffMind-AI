@@ -1,0 +1,7 @@
+# Vercel
+.vercel/
+
+# Local tooling
+.tools/
+.vercel-cli/
+tmp/

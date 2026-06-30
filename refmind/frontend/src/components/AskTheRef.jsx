@@ -1,24 +1,23 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../api/client'
+import { getAskRefStarters } from '../data/askRefStarters'
 
-const STARTERS = [
-  'Was the referee correct?',
-  'Why do fans disagree?',
-  'Which rule applies?',
-  'What did the camera miss?',
-  'Could VAR have decided differently?',
-  'Was it a clear and obvious error?',
-  'Why is confidence not 100%?',
-  'What would change the verdict?',
-]
-
-export default function AskTheRef({ incidentId, analysisContext }) {
+export default function AskTheRef({ incidentId, analysisContext, starters }) {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [messages, setMessages] = useState([])
   const [error, setError] = useState(null)
   const scrollRef = useRef(null)
+
+  const promptStarters = starters?.length ? starters : getAskRefStarters(incidentId)
+
+  useEffect(() => {
+    setMessages([])
+    setInput('')
+    setError(null)
+    setOpen(false)
+  }, [incidentId])
 
   const scrollToBottom = useCallback(() => {
     requestAnimationFrame(() => {
@@ -89,7 +88,7 @@ export default function AskTheRef({ incidentId, analysisContext }) {
           >
             {messages.length === 0 && (
               <p className="text-sm text-gray-500 text-center py-2">
-                Questions are scoped to this incident only.
+                Questions are scoped to this incident only — pick a prompt or type your own.
               </p>
             )}
             {messages.map((msg, i) => (
@@ -133,7 +132,7 @@ export default function AskTheRef({ incidentId, analysisContext }) {
           )}
 
           <div className="flex flex-wrap gap-2 mb-3">
-            {STARTERS.map((s) => (
+            {promptStarters.map((s) => (
               <button
                 key={s}
                 type="button"

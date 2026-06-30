@@ -108,6 +108,18 @@ http://localhost:5173/?demo=wc2022-saudi-offside
 http://localhost:5173/?demo=ucl-2019-llorente-handball
 ```
 
+### Deploy on Vercel (no local servers)
+
+Frontend + API deploy together. Demo mode is on by default — no `localhost` needed.
+
+1. [vercel.com/new](https://vercel.com/new) → Import **diya28varne/hands-on-labs**
+2. Set **Root Directory** to `refmind`
+3. Deploy → open `https://your-app.vercel.app/?demo=wc2022-montiel-handball`
+
+CLI (from `refmind/`): `npx vercel --prod`
+
+Optional Vercel env vars: `WATSONX_API_KEY`, `WATSONX_PROJECT_ID`, `DEMO_MODE=false`
+
 ### Connect IBM Granite (watsonx.ai)
 
 1. Create a project at [watsonx.ai](https://dataplatform.cloud.ibm.com/)

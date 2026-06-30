@@ -104,7 +104,7 @@ export default function App() {
           <div className="text-center py-20">
             <p className="text-accent-red mb-4">{error}</p>
             <p className="text-gray-500 text-sm">
-              Make sure the backend is running on port 8000.
+              Could not reach the RefMind API. If running locally, start the backend on port 8001.
             </p>
           </div>
         )}

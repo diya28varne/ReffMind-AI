@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -30,7 +32,8 @@ app.add_middleware(
 
 @app.on_event("startup")
 def startup() -> None:
-    seed_vectorstore()
+    if os.getenv("VERCEL") != "1":
+        seed_vectorstore()
 
 
 class VoteRequest(BaseModel):

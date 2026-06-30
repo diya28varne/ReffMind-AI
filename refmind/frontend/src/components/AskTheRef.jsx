@@ -6,6 +6,10 @@ const STARTERS = [
   'Why do fans disagree?',
   'Which rule applies?',
   'What did the camera miss?',
+  'Could VAR have decided differently?',
+  'Was it a clear and obvious error?',
+  'Why is confidence not 100%?',
+  'What would change the verdict?',
 ]
 
 export default function AskTheRef({ incidentId, analysisContext }) {

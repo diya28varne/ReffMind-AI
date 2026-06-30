@@ -87,8 +87,7 @@ export default function App() {
               </span>
               {trustStats.count > 0 && (
                 <span className="text-[10px] text-accent-gold">
-                  Trust {trustStats.currentAvg}/5
-                  {trustStats.delta !== 0 && ` · ${trustStats.delta > 0 ? '+' : ''}${trustStats.delta}%`}
+                  Trust {trustStats.currentAvg.toFixed(1)}/5
                 </span>
               )}
             </div>
@@ -134,7 +133,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="text-center py-8 text-xs text-gray-600">
+      <footer className="text-center py-8 text-xs text-gray-400">
         IBM Granite · Docling · LangChain · Chroma
       </footer>
     </div>

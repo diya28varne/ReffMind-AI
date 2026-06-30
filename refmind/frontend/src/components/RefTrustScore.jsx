@@ -42,17 +42,8 @@ export default function RefTrustScore({ incidentId, onRated }) {
       {submitted && stats && (
         <div className="space-y-1 pt-2 border-t border-pitch-600">
           <p className="text-sm text-gray-300">
-            Session trust average: <span className="text-accent-gold font-bold">{stats.currentAvg}/5</span>
+            Session trust average: <span className="text-accent-gold font-bold">{stats.currentAvg.toFixed(1)}/5</span>
           </p>
-          {stats.count > 1 && stats.delta !== 0 && (
-            <p className="text-xs text-gray-500">
-              Your referee trust {stats.delta > 0 ? 'increased' : 'shifted'} by{' '}
-              <span className={stats.delta > 0 ? 'text-accent-green' : 'text-accent-gold'}>
-                {Math.abs(stats.delta)}%
-              </span>{' '}
-              across {stats.count} incidents
-            </p>
-          )}
         </div>
       )}
     </div>

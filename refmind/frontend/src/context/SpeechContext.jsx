@@ -10,12 +10,26 @@ export function SpeechProvider({ children }) {
   const utteranceRef = useRef(null)
   const charIndexRef = useRef(0)
   const textRef = useRef('')
+  const voicesReadyRef = useRef(false)
 
   useEffect(() => {
-    const loadVoices = () => window.speechSynthesis?.getVoices()
+    const loadVoices = () => {
+      const voices = window.speechSynthesis?.getVoices() ?? []
+      if (voices.length > 0) voicesReadyRef.current = true
+    }
     loadVoices()
     window.speechSynthesis?.addEventListener('voiceschanged', loadVoices)
     return () => window.speechSynthesis?.removeEventListener('voiceschanged', loadVoices)
+  }, [])
+
+  const pickVoice = useCallback(() => {
+    const voices = window.speechSynthesis.getVoices()
+    return (
+      voices.find((v) => v.lang.startsWith('en') && v.name.includes('Google')) ||
+      voices.find((v) => v.lang.startsWith('en-GB')) ||
+      voices.find((v) => v.lang.startsWith('en')) ||
+      null
+    )
   }, [])
 
   const stop = useCallback(() => {
@@ -27,6 +41,47 @@ export function SpeechProvider({ children }) {
     setHighlightRange({ start: 0, end: 0 })
     setError(null)
   }, [])
+
+  const startUtterance = useCallback((sectionId, text, attempt = 0) => {
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.rate = 0.95
+    utterance.pitch = 1
+    const voice = pickVoice()
+    if (voice) utterance.voice = voice
+
+    utterance.onstart = () => {
+      setStatus('playing')
+      setError(null)
+    }
+    utterance.onboundary = (event) => {
+      if (event.name === 'word') {
+        charIndexRef.current = event.charIndex
+        const end = event.charIndex + (event.charLength || 1)
+        setHighlightRange({ start: event.charIndex, end })
+      }
+    }
+    utterance.onend = () => {
+      if (utteranceRef.current !== utterance) return
+      setStatus('idle')
+      setActiveId(null)
+      setHighlightRange({ start: 0, end: 0 })
+      utteranceRef.current = null
+    }
+    utterance.onerror = (e) => {
+      if (utteranceRef.current !== utterance) return
+      // Benign: stop(), switching sections, or Chrome cancel-before-speak quirk
+      if (e.error === 'interrupted' || e.error === 'canceled') return
+      if (attempt < 1) {
+        window.setTimeout(() => startUtterance(sectionId, text, attempt + 1), 120)
+        return
+      }
+      setError('Unable to play narration. Tap the speaker again or try Chrome/Edge.')
+      setStatus('error')
+    }
+
+    utteranceRef.current = utterance
+    window.speechSynthesis.speak(utterance)
+  }, [pickVoice])
 
   const speak = useCallback(
     (sectionId, text) => {
@@ -41,47 +96,19 @@ export function SpeechProvider({ children }) {
         return
       }
 
-      stop()
+      window.speechSynthesis.cancel()
+      utteranceRef.current = null
+      charIndexRef.current = 0
+      setHighlightRange({ start: 0, end: 0 })
       setActiveId(sectionId)
       setStatus('loading')
       setError(null)
       textRef.current = text
 
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.rate = 0.95
-      utterance.pitch = 1
-      const voices = window.speechSynthesis.getVoices()
-      const preferred =
-        voices.find((v) => v.lang.startsWith('en') && v.name.includes('Google')) ||
-        voices.find((v) => v.lang.startsWith('en-GB')) ||
-        voices.find((v) => v.lang.startsWith('en'))
-      if (preferred) utterance.voice = preferred
-
-      utterance.onstart = () => setStatus('playing')
-      utterance.onboundary = (event) => {
-        if (event.name === 'word') {
-          charIndexRef.current = event.charIndex
-          const end = event.charIndex + (event.charLength || 1)
-          setHighlightRange({ start: event.charIndex, end })
-        }
-      }
-      utterance.onend = () => {
-        setStatus('idle')
-        setActiveId(null)
-        setHighlightRange({ start: 0, end: 0 })
-        utteranceRef.current = null
-      }
-      utterance.onerror = (e) => {
-        if (e.error !== 'interrupted') {
-          setError('Unable to play narration.')
-          setStatus('error')
-        }
-      }
-
-      utteranceRef.current = utterance
-      window.speechSynthesis.speak(utterance)
+      // Chrome needs a tick after cancel(); voices may load async on first click
+      window.setTimeout(() => startUtterance(sectionId, text), voicesReadyRef.current ? 50 : 150)
     },
-    [stop],
+    [startUtterance],
   )
 
   const pause = useCallback(() => {

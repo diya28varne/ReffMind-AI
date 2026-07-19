@@ -19,6 +19,12 @@ class Settings(BaseSettings):
     )
     demo_mode: bool = Field(default=True, validation_alias="DEMO_MODE")
 
+    gemini_api_key: str = Field(default="", validation_alias="GEMINI_API_KEY")
+    gemini_model_id: str = Field(
+        default="gemini-2.0-flash",
+        validation_alias="GEMINI_MODEL_ID",
+    )
+
     chroma_persist_dir: str = "data/chroma"
     rules_pdf_dir: str = "data/rules"
     incidents_path: str = "app/data/incidents.json"
@@ -37,6 +43,14 @@ class Settings(BaseSettings):
     @property
     def granite_available(self) -> bool:
         return self.watsonx_configured and not self.demo_mode
+
+    @property
+    def gemini_configured(self) -> bool:
+        return self.gemini_api_key not in self._PLACEHOLDERS
+
+    @property
+    def gemini_available(self) -> bool:
+        return self.gemini_configured and not self.demo_mode
 
 
 settings = Settings()

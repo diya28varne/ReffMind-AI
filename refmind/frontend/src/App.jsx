@@ -3,6 +3,7 @@ import { api } from './api/client'
 import ProgressBar from './components/ProgressBar'
 import OpeningQuote from './components/OpeningQuote'
 import BringYourOwnControversy from './components/BringYourOwnControversy'
+import GoogleGravityButton from './components/GoogleGravityButton'
 import RevealScreen from './components/RevealScreen'
 import VotingScreen from './components/VotingScreen'
 import { computeTrustStats } from './utils/trustSession'
@@ -81,7 +82,7 @@ export default function App() {
             </p>
           </div>
           {incidents.length > 0 && (
-            <div className="text-right">
+            <div className="text-right flex flex-col items-end gap-1.5">
               <span className="text-xs text-gray-500 block">
                 {index + 1} / {incidents.length}
               </span>
@@ -90,6 +91,7 @@ export default function App() {
                   Trust {trustStats.currentAvg.toFixed(1)}/5
                 </span>
               )}
+              {phase === PHASE.REVEAL && <GoogleGravityButton />}
             </div>
           )}
         </div>
@@ -145,7 +147,7 @@ export default function App() {
       </main>
 
       <footer className="text-center py-8 text-xs text-gray-400">
-        IBM Granite · Docling · Guardian audit · Disagreement engine
+        IBM Granite · Docling · Google Gemini · Google Search · Gravity
       </footer>
     </div>
   )

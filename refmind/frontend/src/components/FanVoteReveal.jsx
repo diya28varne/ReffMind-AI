@@ -6,6 +6,7 @@ export default function FanVoteReveal({ userVote, fanYesPct, fanAgreementPct, ag
     <section
       className="animate-fade-up text-center bg-pitch-800 border border-pitch-600 rounded-2xl p-8"
       aria-labelledby="fan-vote-heading"
+      data-gravity
     >
       <p id="fan-vote-heading" className="text-gray-400 text-sm uppercase tracking-widest mb-4">
         Your call vs the crowd

@@ -30,3 +30,224 @@ body {
 .vote-pulse {
   animation: pulse-ring 2s infinite;
 }
+
+@keyframes reason-scan-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 197, 66, 0.35); }
+  50% { box-shadow: 0 0 0 8px rgba(245, 197, 66, 0); }
+}
+
+.reason-scanning {
+  animation: reason-scan-pulse 0.7s ease-in-out infinite;
+}
+
+@keyframes reason-live-in {
+  from {
+    opacity: 0.6;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reason-live-pop {
+  animation: reason-live-in 0.45s ease-out forwards;
+}
+
+@keyframes scan-dot {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.reason-scan-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #f5c542;
+  animation: scan-dot 0.8s ease-in-out infinite;
+}
+
+/* ——— OFFSIDE-style 3D reason cards ——— */
+.reason-3d-stage {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.reason-3d-card-wrap {
+  perspective: 900px;
+}
+
+.reason-3d-card {
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s ease,
+    border-color 0.35s ease,
+    opacity 0.4s ease;
+  background: #0f2e1c;
+  border-color: #1e5234;
+  opacity: 0.45;
+  transform: rotateY(-18deg) rotateX(8deg) translateZ(-20px) scale(0.96);
+}
+
+.reason-3d-card.is-waiting {
+  opacity: 0.4;
+}
+
+.reason-3d-card.is-scanning {
+  opacity: 1;
+  border-color: rgba(245, 197, 66, 0.7);
+  transform: rotateY(0deg) rotateX(0deg) translateZ(28px) scale(1.03);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(245, 197, 66, 0.25);
+  animation: reason-scan-pulse 0.7s ease-in-out infinite;
+}
+
+.reason-3d-card.is-live {
+  opacity: 1;
+  border-color: rgba(245, 197, 66, 0.5);
+  background: linear-gradient(160deg, #164028 0%, #0f2e1c 55%, #0a1f14 100%);
+  transform: rotateY(0deg) rotateX(0deg) translateZ(12px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4), 0 0 24px rgba(245, 197, 66, 0.12);
+  animation: reason-3d-settle 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.reason-3d-card.is-ruled-out {
+  opacity: 0.62;
+  border-color: #1e5234;
+  transform: rotateY(6deg) rotateX(2deg) translateZ(0) scale(0.98);
+  filter: saturate(0.7);
+}
+
+.reason-3d-card.is-live:hover {
+  transform: rotateY(-4deg) rotateX(3deg) translateZ(20px);
+}
+
+@keyframes reason-3d-settle {
+  0% {
+    transform: rotateY(-12deg) translateZ(36px) scale(1.04);
+  }
+  100% {
+    transform: rotateY(0deg) rotateX(0deg) translateZ(12px) scale(1);
+  }
+}
+
+.reason-art-bg {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(245, 197, 66, 0.22), transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(46, 204, 113, 0.08), transparent 50%),
+    linear-gradient(135deg, #0a1f14 0%, #164028 50%, #0f2e1c 100%);
+}
+
+@keyframes stadium-ken-pan {
+  0% { transform: scale(1.05) translate3d(0, 0, 0); }
+  100% { transform: scale(1.12) translate3d(-2%, -1%, 0); }
+}
+
+.stadium-ken-pan {
+  animation: stadium-ken-pan 18s ease-in-out alternate infinite;
+}
+
+.reason-3d-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(10, 31, 20, 0.75) 100%);
+  pointer-events: none;
+}
+
+/* ——— IFAB 3D page flip ——— */
+.ifab-3d-stage {
+  perspective: 1400px;
+  padding: 0.25rem 0.5rem 0.75rem;
+}
+
+.ifab-3d-book {
+  position: relative;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transform: rotateY(-72deg) rotateX(4deg);
+  opacity: 0.35;
+  transition:
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.5s ease;
+  filter: drop-shadow(12px 18px 28px rgba(0, 0, 0, 0.55));
+}
+
+.ifab-3d-book.is-open {
+  transform: rotateY(0deg) rotateX(2deg) translateZ(0);
+  opacity: 1;
+}
+
+.ifab-3d-spine {
+  position: absolute;
+  left: -10px;
+  top: 4px;
+  bottom: 4px;
+  width: 12px;
+  border-radius: 3px 0 0 3px;
+  background: linear-gradient(90deg, #6b5a2a, #c4a035 40%, #8a7020);
+  transform: rotateY(-25deg) translateZ(-4px);
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.35);
+}
+
+.ifab-3d-page {
+  transform-style: preserve-3d;
+  box-shadow:
+    0 2px 0 #e2dcc8,
+    0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.ifab-page-curl {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(225deg, transparent 45%, rgba(0, 0, 0, 0.07) 100%);
+  pointer-events: none;
+}
+
+.ifab-page-badge {
+  transform: translateZ(0);
+  transition: transform 0.4s ease;
+}
+
+.ifab-3d-book.is-open + * .ifab-page-badge,
+section:has(.ifab-3d-book.is-open) .ifab-page-badge {
+  animation: ifab-badge-pop 0.5s ease 0.35s both;
+}
+
+@keyframes ifab-badge-pop {
+  from {
+    opacity: 0.4;
+    transform: translateY(6px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reason-3d-card,
+  .ifab-3d-book {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+.gravity-clone {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  cursor: grab;
+}
+
+.gravity-clone:active {
+  cursor: grabbing;
+}

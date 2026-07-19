@@ -29,6 +29,7 @@ export default function FinalVerdict({
         VERDICT_STYLES[verdict] || VERDICT_STYLES['Defensible but debatable']
       }`}
       aria-labelledby="final-verdict-heading"
+      data-gravity
     >
       <div className="flex items-start justify-between gap-3 mb-2">
         <p

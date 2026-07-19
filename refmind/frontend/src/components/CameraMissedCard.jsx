@@ -21,6 +21,7 @@ export default function CameraMissedCard({
       className="animate-fade-up relative overflow-hidden rounded-xl border-2 border-accent-gold/30"
       style={{ animationDelay: `${delay}ms` }}
       aria-labelledby="camera-missed-heading"
+      data-gravity
     >
       {hasScene && (
         <>

@@ -11,6 +11,7 @@ from app.config import settings
 from app.services.ask_ref import ask_ref
 from app.services.analyzer import analyze_incident
 from app.services.controversy import analyze_custom_controversy
+from app.services.gemini import run_gemini_tools, test_gemini_connection
 from app.services.granite import test_granite_connection
 from app.services.incidents import get_fan_result, get_incident, list_incidents
 from app.services.mind_change import record_mind_change
@@ -74,10 +75,13 @@ def health() -> dict:
     return {
         "status": "ok",
         "granite_live": settings.granite_available,
+        "gemini_live": settings.gemini_available,
+        "gemini_configured": settings.gemini_configured,
         "demo_mode": settings.demo_mode,
         "using_demo_fallback": not settings.granite_available,
         "watsonx_configured": settings.watsonx_configured,
         "model_id": settings.watsonx_model_id,
+        "gemini_model_id": settings.gemini_model_id,
     }
 
 
@@ -86,6 +90,11 @@ def health_granite() -> dict:
     """Test live Granite connection (requires DEMO_MODE=false and valid credentials)."""
     return test_granite_connection()
 
+
+@router.get("/health/gemini")
+def health_gemini() -> dict:
+    """Test live Gemini connection (requires DEMO_MODE=false and GEMINI_API_KEY)."""
+    return test_gemini_connection()
 
 @router.get("/incidents")
 def get_incidents() -> list[dict]:
@@ -125,6 +134,7 @@ def analyze(incident_id: str, body: AnalyzeRequest) -> dict:
 
     fan = get_fan_result(incident, body.user_vote)
     analysis = analyze_incident(incident, body.user_vote)
+    gemini_tools = run_gemini_tools(incident, analysis=analysis)
 
     return {
         "incident_id": incident_id,
@@ -137,6 +147,7 @@ def analyze(incident_id: str, body: AnalyzeRequest) -> dict:
         "pressure_context": incident.get("pressure_context"),
         "description": incident["description"],
         "question": incident["question"],
+        "gemini_tools": gemini_tools,
         **fan,
         **analysis,
     }

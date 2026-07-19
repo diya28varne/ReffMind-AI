@@ -68,7 +68,13 @@ def _retrieve_seed_rules(query: str, topic: str | None = None, k: int = 3) -> li
     return [
         Document(
             page_content=rule["text"],
-            metadata={"source": rule["source"], "topic": rule["topic"]},
+            metadata={
+                "source": rule["source"],
+                "topic": rule["topic"],
+                "law": rule.get("law", "IFAB"),
+                "page": rule.get("page", ""),
+                "section": rule.get("section", ""),
+            },
         )
         for rule in top
     ]
@@ -92,7 +98,13 @@ def seed_vectorstore() -> int:
     docs = [
         Document(
             page_content=rule["text"],
-            metadata={"source": rule["source"], "topic": rule["topic"]},
+            metadata={
+                "source": rule["source"],
+                "topic": rule["topic"],
+                "law": rule.get("law", "IFAB"),
+                "page": rule.get("page", ""),
+                "section": rule.get("section", ""),
+            },
         )
         for rule in SEED_RULES
     ]

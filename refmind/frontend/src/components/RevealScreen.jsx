@@ -6,7 +6,9 @@ import DebateMode from './DebateMode'
 import EmotionRuleMeter from './EmotionRuleMeter'
 import FanVoteReveal from './FanVoteReveal'
 import FinalVerdict from './FinalVerdict'
+import GeminiToolsPanel from './GeminiToolsPanel'
 import GuardianAudit from './GuardianAudit'
+import IfabPageProof from './IfabPageProof'
 import PerspectiveSwitch from './PerspectiveSwitch'
 import PressureOnReferee from './PressureOnReferee'
 import RefTrustScore from './RefTrustScore'
@@ -49,6 +51,8 @@ export default function RevealScreen({ result, onNext, onRestart, hasNext, onTru
 
       <WhyArgumentsLast anatomy={result.argument_anatomy} />
 
+      <IfabPageProof proof={result.rule_proof} />
+
       <PerspectiveSwitch result={result} speakTexts={speak} />
 
       <EmotionRuleMeter emotionRule={result.emotion_rule} />
@@ -89,6 +93,8 @@ export default function RevealScreen({ result, onNext, onRestart, hasNext, onTru
       />
 
       <GuardianAudit audit={result.guardian_audit} />
+
+      <GeminiToolsPanel tools={result.gemini_tools} />
 
       <AskTheRef incidentId={result.incident_id} analysisContext={result} />
 

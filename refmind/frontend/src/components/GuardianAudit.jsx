@@ -9,6 +9,7 @@ export default function GuardianAudit({ audit, delay = 900 }) {
       className="animate-fade-up rounded-xl border border-pitch-600 bg-pitch-800/90 p-6"
       style={{ animationDelay: `${delay}ms` }}
       aria-labelledby="guardian-audit-heading"
+      data-gravity
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>

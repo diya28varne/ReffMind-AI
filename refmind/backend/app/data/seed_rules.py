@@ -1,9 +1,15 @@
-"""Seed IFAB rule snippets for RAG when PDFs are not yet ingested."""
+"""Seed IFAB rule snippets for RAG when PDFs are not yet ingested.
 
-SEED_RULES: list[dict[str, str]] = [
+Page numbers map to IFAB Laws of the Game 2024/25 (official PDF pagination).
+"""
+
+SEED_RULES: list[dict[str, str | int]] = [
     {
         "topic": "handball",
-        "source": "IFAB Law 12 — Handball (summary)",
+        "source": "IFAB Law 12 — Handball",
+        "law": "Law 12",
+        "page": 107,
+        "section": "Handball",
         "text": (
             "Handball offence if a player deliberately touches the ball with the hand or arm, "
             "including moving the hand or arm towards the ball. It is also handball when a player "
@@ -16,6 +22,9 @@ SEED_RULES: list[dict[str, str]] = [
     {
         "topic": "handball denying goal",
         "source": "IFAB Law 12 — Denying a goal",
+        "law": "Law 12",
+        "page": 112,
+        "section": "Denying a goal or obvious goal-scoring opportunity",
         "text": (
             "A player who deliberately handles the ball to deny the opposing team a goal or an "
             "obvious goal-scoring opportunity must be sent off (red card). "
@@ -24,7 +33,10 @@ SEED_RULES: list[dict[str, str]] = [
     },
     {
         "topic": "offside",
-        "source": "IFAB Law 11 — Offside (summary)",
+        "source": "IFAB Law 11 — Offside",
+        "law": "Law 11",
+        "page": 91,
+        "section": "Offside position & offence",
         "text": (
             "A player is in an offside position if any part of the head, body or feet is nearer "
             "to the opponents' goal line than both the ball and the second-last opponent. "
@@ -35,6 +47,9 @@ SEED_RULES: list[dict[str, str]] = [
     {
         "topic": "penalty foul",
         "source": "IFAB Law 12 — Fouls and misconduct",
+        "law": "Law 12",
+        "page": 103,
+        "section": "Direct free kick / penalty",
         "text": (
             "A direct free kick (or penalty if in the penalty area) is awarded if a player "
             "carelessly, recklessly or with excessive force commits any of the listed offences "
@@ -45,7 +60,10 @@ SEED_RULES: list[dict[str, str]] = [
     },
     {
         "topic": "VAR",
-        "source": "IFAB VAR Protocol (summary)",
+        "source": "IFAB VAR Protocol",
+        "law": "VAR Protocol",
+        "page": 145,
+        "section": "Scope of VAR review",
         "text": (
             "VAR is used for clear and obvious errors or serious missed incidents in four match-changing "
             "situations: goals, penalty decisions, direct red cards, and mistaken identity. "

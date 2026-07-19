@@ -1,5 +1,77 @@
 [
   {
+    "id": "wc1986-hand-of-god",
+    "title": "Hand of God — Maradona 1986",
+    "match": "Argentina vs England, World Cup Quarter-Final 1986",
+    "minute": 51,
+    "question": "Should Maradona's first goal have stood?",
+    "description": "Mexico 1986. Diego Maradona rises with Peter Shilton and punches the ball into the net with his left hand. The referee gives the goal. Buenos Aires called it the greatest goal; London called it cheating. Same four seconds — opposite truths. Forty years later the argument still has not ended.",
+    "video_hint": "Azteca Stadium 1986 — the Hand of God, then the Goal of the Century minutes later",
+    "user_vote_prompt": "Should the goal have stood? Vote now.",
+    "fan_yes_pct": 47,
+    "mind_change_pct": 22,
+    "rule_topic": "handball",
+    "rule_citation": "IFAB Law 12 — Handball",
+    "rule_keywords": ["handball", "deliberate", "arm", "hand", "goal", "Law 12"],
+    "referee_context": {
+      "referee_position": "Outside the penalty area, trailing the play from central midfield",
+      "view_angle": "Behind and below the jump — Shilton's body screened Maradona's arm at the exact contact",
+      "decision_time_seconds": 1,
+      "pressure": "World Cup quarter-final, Argentina vs England, four years after the Falklands War — stadium already on a knife-edge"
+    },
+    "pressure_context": {
+      "crowd": "114,580 at Estadio Azteca",
+      "decision_time_seconds": 1,
+      "view_quality": "Screened by bodies — arm contact invisible from the referee's trail angle",
+      "stakes": "World Cup quarter-final; national rivalry beyond football"
+    },
+    "emotion_rule": {
+      "emotion_label": "CHEATING",
+      "rule_label": "CLEAR HANDBALL — Law 12"
+    },
+    "camera_context": {
+      "broadcast_angle": "Side-on camera caught the punch clearly; reverse angles and still frames left no doubt",
+      "camera_limit": "TV and still photography showed what the referee's trail angle never could — deliberate hand contact",
+      "missing_context": "The referee had no replay; the assistant was unsighted on the far side. Cameras settled the factual truth for history, not for the live call.",
+      "what_ref_saw": "Ball looped over Shilton into the net after a contested leap — no clear view of the hand"
+    },
+    "ground_truth_note": "IFAB Law 12 — deliberately handling the ball is a direct free kick / penalty offence. The hand contact is clear on replay; the live call missed it.",
+    "argument_anatomy": {
+      "headline": "The engine rules out two reasons completely.",
+      "closing": "What's left is the real argument — sightline and sides.",
+      "factors": [
+        {
+          "id": "rule_unclear",
+          "label": "Is the rule unclear?",
+          "active": false,
+          "verdict": "Ruled out",
+          "detail": "Law 12 is unambiguous: a punched goal is handball. The rule was never the argument."
+        },
+        {
+          "id": "truth_unknowable",
+          "label": "Is the truth unknowable?",
+          "active": false,
+          "verdict": "Ruled out",
+          "detail": "Everyone saw the hand — on TV, in stills, forever. The truth is obvious."
+        },
+        {
+          "id": "referee_sightline",
+          "label": "Could the referee see it in time?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Trail angle + Shilton's body screened the arm. One second, no replay — the referee never had the shot TV later framed."
+        },
+        {
+          "id": "sides_want",
+          "label": "Do the sides just want their own way?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Buenos Aires: genius and destiny. London: theft. Same four seconds, opposite national stories — still unresolved."
+        }
+      ]
+    }
+  },
+  {
     "id": "wc2022-montiel-handball",
     "title": "Montiel handball — World Cup Final 2022",
     "match": "Argentina vs France, World Cup Final 2022",
@@ -35,7 +107,41 @@
       "missing_context": "Whether Montiel's arm was already in a natural position when Molina's clearance deflected off it — the broadcast never showed the referee's exact sightline",
       "what_ref_saw": "Ball struck an extended arm in the box during a chaotic scramble; immediate penalty signal"
     },
-    "ground_truth_note": "IFAB Law 12 — not every arm contact is handball; the arm must be in an unnaturally extended position or move toward the ball. Borderline on both counts."
+    "ground_truth_note": "IFAB Law 12 — not every arm contact is handball; the arm must be in an unnaturally extended position or move toward the ball. Borderline on both counts.",
+    "argument_anatomy": {
+      "headline": "This argument lives on the borderline of the rule.",
+      "closing": "Truth is visible — the fight is over wording and loyalty.",
+      "factors": [
+        {
+          "id": "rule_unclear",
+          "label": "Is the rule unclear?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Law 12's 'unnatural position' language leaves honest referees room to disagree on the same arm."
+        },
+        {
+          "id": "truth_unknowable",
+          "label": "Is the truth unknowable?",
+          "active": false,
+          "verdict": "Ruled out",
+          "detail": "Replays show the contact. What is contested is classification, not the image."
+        },
+        {
+          "id": "referee_sightline",
+          "label": "Could the referee see it in time?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Two-second scramble; front-on view saw arm contact but not whether the arm moved toward the ball."
+        },
+        {
+          "id": "sides_want",
+          "label": "Do the sides just want their own way?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "France fans see justice; Argentina fans see a World Cup stolen by slow-motion pedantry."
+        }
+      ]
+    }
   },
   {
     "id": "wc2010-suarez-handball",
@@ -69,7 +175,41 @@
       "missing_context": "The real debate is moral (gamesmanship vs cheating), not visual — cameras cannot show intent vs desperation",
       "what_ref_saw": "Deliberate handball preventing a certain goal — mandatory red card and penalty"
     },
-    "ground_truth_note": "IFAB Law 12 — handball denying an obvious goal-scoring opportunity: red card and penalty. The call is correct; the punishment debate is emotional, not legal."
+    "ground_truth_note": "IFAB Law 12 — handball denying an obvious goal-scoring opportunity: red card and penalty. The call is correct; the punishment debate is emotional, not legal.",
+    "argument_anatomy": {
+      "headline": "The law is settled. The argument is moral.",
+      "closing": "Rule and sightline are clear — what remains is what justice should feel like.",
+      "factors": [
+        {
+          "id": "rule_unclear",
+          "label": "Is the rule unclear?",
+          "active": false,
+          "verdict": "Ruled out",
+          "detail": "Denying an obvious goal-scoring opportunity by handball is mandatory red + penalty."
+        },
+        {
+          "id": "truth_unknowable",
+          "label": "Is the truth unknowable?",
+          "active": false,
+          "verdict": "Ruled out",
+          "detail": "Everyone saw the double-hand stop. The factual call is not in dispute."
+        },
+        {
+          "id": "referee_sightline",
+          "label": "Could the referee see it in time?",
+          "active": false,
+          "verdict": "Ruled out",
+          "detail": "Perfect goal-line sightline — one of the clearest decisions in World Cup history."
+        },
+        {
+          "id": "sides_want",
+          "label": "Do the sides just want their own way?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Ghana sees a continent robbed by gamesmanship; Uruguay sees legal desperation. The fight is over fairness, not Law 12."
+        }
+      ]
+    }
   },
   {
     "id": "euro2020-england-penalty",
@@ -103,7 +243,41 @@
       "missing_context": "A laser pointer was visible on the Danish keeper from the crowd — the referee and cameras were dealing with multiple distractions simultaneously",
       "what_ref_saw": "Sterling past his man, leg contact, attacker on the ground in the box"
     },
-    "ground_truth_note": "IFAB Law 12 — a penalty requires a careless, reckless, or excessively forceful challenge. Many referees would let this go; others call it on contact alone."
+    "ground_truth_note": "IFAB Law 12 — a penalty requires a careless, reckless, or excessively forceful challenge. Many referees would let this go; others call it on contact alone.",
+    "argument_anatomy": {
+      "headline": "Slow motion and home noise keep this fight alive.",
+      "closing": "Contact is real — how much contact counts is the war.",
+      "factors": [
+        {
+          "id": "rule_unclear",
+          "label": "Is the rule unclear?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "'Careless' contact at this pace is a judgment call two honest referees can flip."
+        },
+        {
+          "id": "truth_unknowable",
+          "label": "Is the truth unknowable?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Replays disagree on whether contact caused the fall or only brushed a knee."
+        },
+        {
+          "id": "referee_sightline",
+          "label": "Could the referee see it in time?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Trailing angle, four seconds, no clear force read — and no VAR on the foul itself."
+        },
+        {
+          "id": "sides_want",
+          "label": "Do the sides just want their own way?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Wembley hears a soft penalty; Copenhagen hears a dive. Loyalty writes both stories."
+        }
+      ]
+    }
   },
   {
     "id": "wc2022-saudi-offside",
@@ -137,7 +311,41 @@
       "missing_context": "Which body part was measured (shoulder vs foot) and the exact frame when the pass was played — both changed between broadcast angles",
       "what_ref_saw": "Flag down initially; after VAR check, told to disallow for offside by the narrowest margin"
     },
-    "ground_truth_note": "IFAB Law 11 — offside is judged on any part of the body except hands/arms. Semi-automated VAR makes calls possible that no human eye could make in real time."
+    "ground_truth_note": "IFAB Law 11 — offside is judged on any part of the body except hands/arms. Semi-automated VAR makes calls possible that no human eye could make in real time.",
+    "argument_anatomy": {
+      "headline": "Technology settles a truth humans cannot see live.",
+      "closing": "The pixel is certain — whether it should decide a World Cup is not.",
+      "factors": [
+        {
+          "id": "rule_unclear",
+          "label": "Is the rule unclear?",
+          "active": false,
+          "verdict": "Ruled out",
+          "detail": "Law 11 is clear once the offside line is drawn on a body part that counts."
+        },
+        {
+          "id": "truth_unknowable",
+          "label": "Is the truth unknowable?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Without semi-automated frames, no stadium seat or live camera could measure a shoulder-pixel margin."
+        },
+        {
+          "id": "referee_sightline",
+          "label": "Could the referee see it in time?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "The on-field referee deferred entirely — the live call was always going to be VAR's."
+        },
+        {
+          "id": "sides_want",
+          "label": "Do the sides just want their own way?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Argentina fans hear conspiracy in delayed lines; others hear precise technology doing its job."
+        }
+      ]
+    }
   },
   {
     "id": "ucl-2019-llorente-handball",
@@ -171,6 +379,40 @@
       "missing_context": "Whether the arm was in a natural position when the cross arrived; the side-on live angle made chest and arm look identical",
       "what_ref_saw": "Ball deflected off Llorente's upper body toward Moura — played on instantly with no hesitation"
     },
-    "ground_truth_note": "IFAB Law 12 — if the ball touches the arm and creates a goal-scoring opportunity, it should be handball. Replays suggest the arm was involved; the referee had no technology to check."
+    "ground_truth_note": "IFAB Law 12 — if the ball touches the arm and creates a goal-scoring opportunity, it should be handball. Replays suggest the arm was involved; the referee had no technology to check.",
+    "argument_anatomy": {
+      "headline": "No VAR — so the argument is about what could be known live.",
+      "closing": "Replay settled the image later; European refereeing could not use it then.",
+      "factors": [
+        {
+          "id": "rule_unclear",
+          "label": "Is the rule unclear?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Arm contact that creates a scoring chance vs natural bounce off the upper body — Law 12 still fights this border."
+        },
+        {
+          "id": "truth_unknowable",
+          "label": "Is the truth unknowable?",
+          "active": false,
+          "verdict": "Ruled out",
+          "detail": "Behind-goal replay shows arm contact. The truth arrived after the whistle, not during it."
+        },
+        {
+          "id": "referee_sightline",
+          "label": "Could the referee see it in time?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Side-on at full speed, chest and arm looked identical. No VAR in Europe that season."
+        },
+        {
+          "id": "sides_want",
+          "label": "Do the sides just want their own way?",
+          "active": true,
+          "verdict": "Live reason",
+          "detail": "Ajax feel robbed by hindsight; Spurs defend the referee's only available real-time read."
+        }
+      ]
+    }
   }
 ]

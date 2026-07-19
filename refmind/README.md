@@ -6,11 +6,11 @@
 
 ### Always-on live demo (bookmark this)
 
-**https://hands-on-labs.vercel.app/?demo=wc2022-montiel-handball**
+**https://hands-on-labs.vercel.app/?demo=wc1986-hand-of-god**
 
 Works 24/7 — no local servers, no `localhost`. `localhost:5173` only works while you run `scripts\start-demo.cmd` on your PC.
 
-RefMind is an AI referee explainability platform built for the **IBM SkillsBuild AI Builders Challenge**. Fans vote on controversial decisions *before* seeing the answer — then get fan splits, IFAB-grounded rule explanations, camera blind-spot analysis, voice narration, and an honest verdict with visible uncertainty.
+RefMind is an AI referee explainability platform built for the **IBM SkillsBuild AI Builders Challenge**. Fans vote on controversial decisions *before* seeing the answer — then get the four-reason disagreement engine, fan splits, IFAB-grounded rule explanations, camera blind-spot analysis, Guardian-style number audit, voice narration, and an honest verdict with visible uncertainty.
 
 ---
 
@@ -29,18 +29,22 @@ RefMind is an AI referee explainability platform built for the **IBM SkillsBuild
 ## What RefMind does
 
 1. **Vote first** — YES/NO before any spoilers (reduces hindsight bias)
-2. **Fan split reveal** — see how the crowd voted
-3. **Four perspectives** — fan, rule, referee, camera (with voice reader)
-4. **Emotion vs rule meter** — fan vote vs AI confidence
-5. **What the camera missed** — OG broadcast scene + link to exact clip moment
-6. **Ask the Ref** — incident-scoped Q&A (custom prompts per incident)
-7. **Honest verdict** — Correct / Defensible but debatable / Likely wrong + confidence %
-8. **Transparency** — clear disclaimer that official VAR data is not public
+2. **Why arguments last** — four-factor disagreement engine (rule / truth / sightline / sides)
+3. **Fan split reveal** — see how the crowd voted
+4. **Four perspectives** — fan, rule, referee, camera (with voice reader)
+5. **Emotion vs rule meter** — fan vote vs AI confidence
+6. **What the camera missed** — OG broadcast scene + link to exact clip moment
+7. **Guardian audit** — second pass so cited numbers cannot be invented
+8. **Ask the Ref** — incident-scoped Q&A (custom prompts per incident)
+9. **Bring your own controversy** — paste facts + two quotes, get a live decomposition
+10. **Honest verdict** — Correct / Defensible but debatable / Likely wrong + confidence %
+11. **Transparency** — clear disclaimer that official VAR data is not public
 
-### Five demo incidents
+### Six demo incidents
 
 | ID | Incident |
 |----|----------|
+| `wc1986-hand-of-god` | **Hand of God** — Maradona 1986 *(starring / pitch default)* |
 | `wc2022-montiel-handball` | Montiel handball — World Cup Final 2022 |
 | `wc2010-suarez-handball` | Suárez goal-line handball — Ghana 2010 |
 | `euro2020-england-penalty` | Sterling penalty — England vs Denmark |
@@ -79,7 +83,7 @@ cd refmind\scripts
 start-demo.cmd
 ```
 
-Opens **http://localhost:5173/?demo=wc2022-montiel-handball**
+Opens **http://localhost:5173/?demo=wc1986-hand-of-god**
 
 ### Option B — Manual setup
 
@@ -107,6 +111,7 @@ Open **http://localhost:5173**
 ### Demo URLs
 
 ```
+http://localhost:5173/?demo=wc1986-hand-of-god
 http://localhost:5173/?demo=wc2022-montiel-handball
 http://localhost:5173/?demo=wc2010-suarez-handball
 http://localhost:5173/?demo=euro2020-england-penalty
@@ -116,7 +121,7 @@ http://localhost:5173/?demo=ucl-2019-llorente-handball
 
 ### Live demo (Vercel)
 
-**https://hands-on-labs.vercel.app/?demo=wc2022-montiel-handball**
+**https://hands-on-labs.vercel.app/?demo=wc1986-hand-of-god**
 
 Same UI as localhost — frontend + API on one domain. Demo mode is on by default.
 
@@ -187,15 +192,18 @@ Opening quote + vote YES/NO
         ↓
 Fan % reveal
         ↓
+Why arguments last (4 reasons) ← signature frame
+        ↓
 Four perspectives (fan / rule / ref / camera) + voice reader
         ↓
 Emotion vs rule · Pressure on ref · OG scene · Why fans disagree
         ↓
 Debate mode · Change your mind · Trust score · Final verdict
         ↓
-Ask the Ref · Transparency note · Next incident
+Guardian audit · Ask the Ref · Transparency · Next incident
 ```
 
+On the first vote screen: **Bring your own controversy** — paste facts + two quotes.
 ---
 
 ## API endpoints
@@ -210,6 +218,7 @@ Ask the Ref · Transparency note · Next incident
 | POST | `/incidents/{id}/analyze` | Full AI analysis + OG scene |
 | POST | `/incidents/{id}/mind-change` | Record vote flip after camera reveal |
 | POST | `/ask-ref` | Incident-scoped Q&A |
+| POST | `/controversy/analyze` | Bring-your-own controversy decomposition |
 
 ---
 
@@ -260,18 +269,20 @@ refmind/
 
 ## MVP checklist
 
-- [x] 5 controversial incidents
+- [x] 6 controversial incidents (Hand of God starring)
 - [x] Vote-before-reveal flow
+- [x] Four-reason disagreement engine
 - [x] Fan percentage reveal
 - [x] RAG on IFAB rules (Docling + LangChain + Chroma)
 - [x] IBM Granite analysis (with demo fallback)
+- [x] Guardian-style number audit
+- [x] Bring your own controversy
 - [x] Referee + camera perspective
 - [x] OG broadcast scenes with timestamped clip links
 - [x] Voice reader (Read to me)
 - [x] Ask the Ref (per-incident prompts)
 - [x] Honest verdict + confidence
 - [x] Transparency disclaimer
-- [x] Future scope teaser (first incident)
 - [x] Demo mode (no API key required)
 
 ---

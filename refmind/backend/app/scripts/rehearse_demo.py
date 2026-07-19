@@ -6,7 +6,7 @@ import json
 import sys
 import urllib.request
 
-INCIDENT_ID = "wc2022-montiel-handball"
+INCIDENT_ID = "wc1986-hand-of-god"
 BASE = "http://127.0.0.1:8001"
 
 

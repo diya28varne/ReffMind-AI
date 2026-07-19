@@ -1,9 +1,9 @@
 # RefMind — 90-Second Demo Script
 
-**Incident:** Montiel handball — Argentina vs France, World Cup Final 2022  
-**Open URL:** http://localhost:5173/?demo=wc2022-montiel-handball
+**Incident:** Hand of God — Maradona, Argentina vs England, World Cup 1986  
+**Open URL:** http://localhost:5173/?demo=wc1986-hand-of-god
 
-**Tagline:** *"Don't just watch the match. Understand the moment."*
+**Tagline:** *"Every football AI argues who was right. RefMind answers why the argument never ends."*
 
 ---
 
@@ -27,82 +27,65 @@ cd refmind\backend
 
 ## The script (90 seconds)
 
-### [0:00] HOOK — 10 sec
+### [0:00] HOOK — 12 sec
 
-> *"Everyone remember this handball in the World Cup final? Argentina leading 3-2 in extra time. France cross into the box. The ball hits Montiel's arm. Penalty. Mbappé scores. 3-3."*
+> *"1986. Maradona rises with Shilton and punches the ball in. Buenos Aires called it the greatest goal. London called it cheating. Same four seconds — opposite truths. Forty years later the argument still has not ended."*
 
 **Action:** Show the voting screen. Don't reveal anything yet.
 
 ---
 
-### [0:10] VOTE — 10 sec
+### [0:12] VOTE — 8 sec
 
-> *"You have five seconds — was it a handball? Vote now."*
+> *"Should the goal have stood? Vote now."*
 
 **Action:** Click **YES** or **NO** on screen. Pause. Let the audience commit.
 
 ---
 
-### [0:20] FAN SPLIT — 15 sec
+### [0:20] FAN SPLIT — 10 sec
 
-> *"58% of fans said yes — handball. You agreed with most people."*  
-> *(Or: "You disagreed with most people" if you voted NO.)*
+> *"47% still say the goal should stand — forty years on. The room is split."*
 
-**Action:** Fan bar animates on screen. Point at the split.
-
----
-
-### [0:35] THE RULE — 15 sec
-
-> *"Here's what the referee actually saw — and why the rule says something different from what you think."*
-
-**Read from screen — Rule section:**
-
-> IFAB Law 12 — not every arm contact is handball. The arm must be in an unnaturally extended position or move toward the ball. On this incident, that's genuinely borderline.
-
-**Action:** Point to *"Grounded in: IFAB …"* footer — rules come from official PDF via Docling, not made up.
+**Action:** Fan bar animates on screen.
 
 ---
 
-### [0:50] REFEREE VIEW — 15 sec
+### [0:30] DISAGREEMENT ENGINE — 20 sec
 
-> *"The referee was 12 metres inside the box, front-on to Montiel. He had about 2 seconds. World Cup final. Extra time. He saw arm contact in a scramble — not whether the arm moved toward the ball."*
+> *"RefMind doesn't ask who was right. It breaks the argument into four reasons it lasts."*
 
-**Action:** RefMind card — **What the referee saw**
+**Action:** Point at the four cards.
 
----
-
-### [1:05] CAMERA + LIE DETECTOR — 20 sec
-
-> *"Here's what the broadcast camera physically couldn't show you."*
-
-**Action:** Camera hid card appears, then **Camera lie detector** — ask audience to tap *Keep my vote* or *Change my vote*.
-
-> *"51% of users flip after seeing what the camera hid. Did the replay lie to you?"*
+> *"Rule unclear? Ruled out — Law 12 is clear. Truth unknowable? Ruled out — we all saw the hand. What's left: the referee couldn't see it in time, and both sides still want their own story."*
 
 ---
 
-### [1:15] TWO REFS — 10 sec
+### [0:50] CAMERA + GUARDIAN — 20 sec
 
-> *"Two professional referees. Two honest calls. Both defensible."*
+> *"TV settled the factual truth for history — not for the live call. And every number on this screen is Guardian-checked against the dataset so Granite cannot invent one."*
 
-**Action:** Split verdict cards — Ref A says penalty, Ref B says play on.
+**Action:** OG clip link + Guardian audit panel.
 
 ---
 
-### [1:25] VERDICT — 5 sec
+### [1:10] VERDICT — 10 sec
 
-> *"Our verdict: Defensible but debatable. Confidence: medium."*
+> *"Verdict: Likely wrong. The fist is clear. The live referee was unsighted. RefMind doesn't end the Hand of God argument — it shows why the argument exists."*
 
-> *"Two professional referees could disagree here — and that's exactly why millions of fans argue. RefMind doesn't tell you what to think. It shows you what you couldn't see."*
-
-**Action:** Verdict card on screen. Pause. End.
+**Action:** Verdict card. Pause. End.
 
 ---
 
 ## One-liner close
 
-> *"RefMind — don't just watch the match. Understand the moment."*
+> *"RefMind — it doesn't end the argument. It shows you why the argument exists."*
+
+---
+
+## Bonus (if time)
+
+Scroll to **Bring your own controversy** on the vote screen — paste a disputed penalty + two manager quotes and watch the four reasons light up live.
 
 ---
 
@@ -112,8 +95,9 @@ cd refmind\backend
 |----------|--------|
 | Why Granite? | Honest reasoning + uncertainty in verdict labels |
 | Why Docling? | IFAB PDF ingested — explanations grounded in official rules |
+| Why four reasons? | Rules out dead arguments so the live ones stand out |
+| Why Guardian audit? | Second pass verifies every cited number against grounded sources |
 | Why vote first? | Stops hindsight bias; makes disagreement emotional |
-| What camera hid? | Structured context sent to Granite — no computer vision needed |
 
 ---
 

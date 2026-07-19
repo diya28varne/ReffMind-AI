@@ -8,7 +8,7 @@ async function request(path, options = {}) {
       ...options,
     })
   } catch {
-    const live = 'https://hands-on-labs.vercel.app/?demo=wc2022-montiel-handball'
+    const live = 'https://hands-on-labs.vercel.app/?demo=wc1986-hand-of-god'
     throw new Error(
       window.location.hostname === 'localhost'
         ? 'Cannot reach the API. Run refmind\\scripts\\start-demo.cmd — or use the live demo.'
@@ -48,6 +48,11 @@ export const api = {
         question,
         analysis_context: analysisContext,
       }),
+    }),
+  analyzeControversy: ({ facts, side_a, side_b }) =>
+    request('/controversy/analyze', {
+      method: 'POST',
+      body: JSON.stringify({ facts, side_a, side_b }),
     }),
   health: () => request('/health'),
 }

@@ -5,6 +5,16 @@ from __future__ import annotations
 from typing import Any
 
 OG_SCENES: dict[str, dict[str, str | int]] = {
+    "wc1986-hand-of-god": {
+        "label": "OG scene",
+        "broadcast": "Live broadcast — trail angle",
+        "caption": "Azteca, 51' — Maradona rises with Shilton; the punch is screened from the referee",
+        "image": "https://img.youtube.com/vi/5sFcPv62Qlc/hqdefault.jpg",
+        "alt": "Argentina vs England, World Cup 1986 — Hand of God",
+        "video_id": "5sFcPv62Qlc",
+        "video_start": 0,
+        "source": "Diego Maradona — Hand of God, World Cup 1986",
+    },
     "wc2022-montiel-handball": {
         "label": "OG scene",
         "broadcast": "Live broadcast — full speed",

@@ -6,9 +6,11 @@ import DebateMode from './DebateMode'
 import EmotionRuleMeter from './EmotionRuleMeter'
 import FanVoteReveal from './FanVoteReveal'
 import FinalVerdict from './FinalVerdict'
+import GuardianAudit from './GuardianAudit'
 import PerspectiveSwitch from './PerspectiveSwitch'
 import PressureOnReferee from './PressureOnReferee'
 import RefTrustScore from './RefTrustScore'
+import WhyArgumentsLast from './WhyArgumentsLast'
 import WhyFansDisagree from './WhyFansDisagree'
 
 function buildSpeakTexts(result) {
@@ -44,6 +46,8 @@ export default function RevealScreen({ result, onNext, onRestart, hasNext, onTru
         fanAgreementPct={fanAgreementPct}
         agreedWithMajority={result.agreed_with_majority}
       />
+
+      <WhyArgumentsLast anatomy={result.argument_anatomy} />
 
       <PerspectiveSwitch result={result} speakTexts={speak} />
 
@@ -83,6 +87,8 @@ export default function RevealScreen({ result, onNext, onRestart, hasNext, onTru
         reasoning={result.verdict_reasoning}
         speakText={speak.verdict}
       />
+
+      <GuardianAudit audit={result.guardian_audit} />
 
       <AskTheRef incidentId={result.incident_id} analysisContext={result} />
 

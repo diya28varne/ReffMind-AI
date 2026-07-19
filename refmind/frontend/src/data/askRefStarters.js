@@ -6,6 +6,14 @@ export const DEFAULT_ASK_REF_STARTERS = [
 ]
 
 export const ASK_REF_STARTERS = {
+  'wc1986-hand-of-god': [
+    'Should the Hand of God have stood?',
+    'Could the referee see the punch?',
+    'Is the rule clear on punched goals?',
+    'Why do Buenos Aires and London still disagree?',
+    'Was this cheating or genius under pressure?',
+    'What did TV show that the referee never saw?',
+  ],
   'wc2022-montiel-handball': [
     'Was Montiel\'s arm in an unnatural position?',
     'Did the ball move toward his arm?',

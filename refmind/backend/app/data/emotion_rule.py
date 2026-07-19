@@ -6,6 +6,10 @@ from typing import Any
 
 # Labels only — percentages are computed at analysis time from fan votes + AI confidence.
 EMOTION_RULE_LABELS: dict[str, dict[str, str]] = {
+    "wc1986-hand-of-god": {
+        "emotion_label": "CHEATING",
+        "rule_label": "CLEAR HANDBALL — Law 12",
+    },
     "wc2022-montiel-handball": {
         "emotion_label": "HAND BALL",
         "rule_label": "BORDERLINE — Law 12",

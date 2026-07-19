@@ -4,7 +4,7 @@ import { TRANSPARENCY_DISCLAIMER } from './TransparencyNote'
 import { useSpeech } from '../context/SpeechContext'
 
 const QUOTE =
-  'Two correct referees can see two different fouls. That\u2019s not a flaw in the rule \u2014 that\u2019s football.'
+  'Every football AI argues who was right. RefMind answers why the argument never ends.'
 
 const DISCLAIMER = TRANSPARENCY_DISCLAIMER
 

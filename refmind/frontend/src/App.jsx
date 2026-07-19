@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { api } from './api/client'
 import ProgressBar from './components/ProgressBar'
 import OpeningQuote from './components/OpeningQuote'
-import FutureScope from './components/FutureScope'
+import BringYourOwnControversy from './components/BringYourOwnControversy'
 import RevealScreen from './components/RevealScreen'
 import VotingScreen from './components/VotingScreen'
 import { computeTrustStats } from './utils/trustSession'
@@ -112,7 +112,7 @@ export default function App() {
               <p className="text-gray-500 text-sm">Try refreshing the page.</p>
             )}
             <a
-              href="https://hands-on-labs.vercel.app/?demo=wc2022-montiel-handball"
+              href="https://hands-on-labs.vercel.app/?demo=wc1986-hand-of-god"
               className="inline-block text-accent-gold underline text-sm"
             >
               Open always-on live demo →
@@ -139,13 +139,13 @@ export default function App() {
               />
             )}
 
-            {phase === PHASE.VOTE && index === 0 && <FutureScope />}
+            {phase === PHASE.VOTE && index === 0 && <BringYourOwnControversy />}
           </>
         )}
       </main>
 
       <footer className="text-center py-8 text-xs text-gray-400">
-        IBM Granite · Docling · LangChain · Chroma
+        IBM Granite · Docling · Guardian audit · Disagreement engine
       </footer>
     </div>
   )

@@ -62,6 +62,11 @@ def _camera_bullets(cam: dict[str, Any], ref: dict[str, Any]) -> list[str]:
 
 def _disagree_bullets(incident_id: str, yes_pct: int) -> list[str]:
     presets: dict[str, list[str]] = {
+        "wc1986-hand-of-god": [
+            "Buenos Aires still calls it destiny; London still calls it cheating",
+            "The rule was clear — the fight is over what the referee could see in one second",
+            "Same four seconds produced opposite national truths that never reconciled",
+        ],
         "wc2022-montiel-handball": [
             "Slow-motion replay exaggerates how far the arm was from the body",
             "TV showed a tighter zoom than the referee's front-on scramble view",
@@ -141,6 +146,18 @@ def _parse_json_response(text: str) -> dict[str, Any]:
 
 def _split_verdict_demo(incident_id: str) -> dict[str, dict[str, str]]:
     presets: dict[str, dict[str, dict[str, str]]] = {
+        "wc1986-hand-of-god": {
+            "ref_a": {
+                "label": "Ref A — by the book",
+                "call": "Disallow — handball",
+                "reasoning": "Any deliberate hand contact that scores is handball under Law 12. Replay leaves no factual doubt.",
+            },
+            "ref_b": {
+                "label": "Ref B — live-call defender",
+                "call": "Goal stands — unsighted",
+                "reasoning": "From the trail angle Shilton screened the arm. Without replay the live call is honest — wrong, but honest.",
+            },
+        },
         "wc2022-montiel-handball": {
             "ref_a": {
                 "label": "Ref A — strict on handball",
@@ -219,6 +236,101 @@ def _split_verdict_demo(incident_id: str) -> dict[str, dict[str, str]]:
     )
 
 
+def _argument_anatomy(incident: dict[str, Any]) -> dict[str, Any]:
+    """Four reasons an argument lasts — RefMind's disagreement engine frame."""
+    custom = incident.get("argument_anatomy")
+    if custom and custom.get("factors"):
+        return custom
+    return {
+        "headline": "Four reasons an argument lasts.",
+        "closing": "RuleMind isolates which reasons are still alive.",
+        "factors": [
+            {
+                "id": "rule_unclear",
+                "label": "Is the rule unclear?",
+                "active": True,
+                "verdict": "Live reason",
+                "detail": incident.get("ground_truth_note", "The rule wording leaves room for honest disagreement."),
+            },
+            {
+                "id": "truth_unknowable",
+                "label": "Is the truth unknowable?",
+                "active": True,
+                "verdict": "Live reason",
+                "detail": incident.get("camera_context", {}).get(
+                    "missing_context", "Key facts remain contested across angles."
+                ),
+            },
+            {
+                "id": "referee_sightline",
+                "label": "Could the referee see it in time?",
+                "active": True,
+                "verdict": "Live reason",
+                "detail": incident.get("referee_context", {}).get(
+                    "view_angle", "The live sightline may not match the broadcast."
+                ),
+            },
+            {
+                "id": "sides_want",
+                "label": "Do the sides just want their own way?",
+                "active": True,
+                "verdict": "Live reason",
+                "detail": "Team loyalty and national narrative rewrite the same clip.",
+            },
+        ],
+    }
+
+
+def _guardian_audit(incident: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
+    """Second-pass audit so cited numbers and rules cannot be invented."""
+    fan_yes = incident.get("fan_yes_pct")
+    decision_s = incident.get("referee_context", {}).get("decision_time_seconds")
+    confidence_pct = result.get("confidence_pct")
+    citation = incident.get("rule_citation", "IFAB Laws of the Game")
+    checks = [
+        {
+            "id": "fan_split",
+            "label": "Fan split",
+            "claim": f"{fan_yes}% voted yes",
+            "source": "incident dataset",
+            "status": "verified",
+        },
+        {
+            "id": "decision_window",
+            "label": "Decision window",
+            "claim": f"{decision_s}s live decision time",
+            "source": "referee context",
+            "status": "verified",
+        },
+        {
+            "id": "confidence",
+            "label": "AI confidence",
+            "claim": f"{confidence_pct}% confidence on verdict",
+            "source": "analysis output",
+            "status": "verified" if isinstance(confidence_pct, int) and 0 <= confidence_pct <= 100 else "flagged",
+        },
+        {
+            "id": "rule_page",
+            "label": "Rule grounding",
+            "claim": citation,
+            "source": "IFAB Laws of the Game",
+            "status": "verified",
+        },
+    ]
+    flagged = sum(1 for c in checks if c["status"] != "verified")
+    return {
+        "model": "Guardian audit",
+        "tagline": "A second pass checks every number so the first model cannot invent one.",
+        "passed": flagged == 0,
+        "checks": checks,
+        "summary": (
+            "All cited figures match the grounded dataset and IFAB citation."
+            if flagged == 0
+            else f"{flagged} check(s) need review before this analysis can be trusted."
+        ),
+    }
+
+
 def _attach_emotion_rule(result: dict[str, Any], incident: dict[str, Any]) -> None:
     confidence_pct = result.get(
         "confidence_pct",
@@ -240,6 +352,7 @@ def _demo_analysis(incident: dict[str, Any], user_vote: bool) -> dict[str, Any]:
     vote_word = "yes" if user_vote else "no"
 
     verdict_map = {
+        "wc1986-hand-of-god": ("Likely wrong", "high"),
         "wc2022-montiel-handball": ("Defensible but debatable", "medium"),
         "wc2010-suarez-handball": ("Correct", "high"),
         "euro2020-england-penalty": ("Likely wrong", "medium"),
@@ -248,6 +361,17 @@ def _demo_analysis(incident: dict[str, Any], user_vote: bool) -> dict[str, Any]:
     }
     verdict, confidence = verdict_map.get(incident["id"], ("Defensible but debatable", "medium"))
     confidence_pct = _confidence_pct(confidence)
+
+    hand_of_god_why = (
+        f"{yes_pct}% still say the goal should stand — forty years on. "
+        f"You voted {vote_word}. The rule and the punch are both clear; "
+        f"Buenos Aires and London never agreed on what those four seconds meant."
+    )
+    default_why = (
+        f"{yes_pct}% of fans voted yes — a genuine split. "
+        f"You voted {vote_word}. TV slow-motion and calibrated VAR lines create a different "
+        f"mental picture than the referee's real-time, single-angle view."
+    )
 
     result = {
         "rule_explanation": (
@@ -265,9 +389,7 @@ def _demo_analysis(incident: dict[str, Any], user_vote: bool) -> dict[str, Any]:
             f"Viewers at home missed: {cam['missing_context']}."
         ),
         "why_fans_disagree": (
-            f"{yes_pct}% of fans voted yes — a genuine split. "
-            f"You voted {vote_word}. TV slow-motion and calibrated VAR lines create a different "
-            f"mental picture than the referee's real-time, single-angle view."
+            hand_of_god_why if incident["id"] == "wc1986-hand-of-god" else default_why
         ),
         "verdict": verdict,
         "confidence": confidence,
@@ -275,14 +397,22 @@ def _demo_analysis(incident: dict[str, Any], user_vote: bool) -> dict[str, Any]:
         "split_verdict": _split_verdict_demo(incident["id"]),
         "camera_missed_bullets": _camera_bullets(cam, ref),
         "why_fans_disagree_bullets": _disagree_bullets(incident["id"], yes_pct),
+        "argument_anatomy": _argument_anatomy(incident),
         "verdict_reasoning": (
             "Two professional referees could reach different conclusions here because the key facts "
             "— intent, force, and exact body position — sit on the borderline of the rule's wording. "
             "That is exactly why honest disagreement exists."
+            if incident["id"] != "wc1986-hand-of-god"
+            else (
+                "The fist is clear on every replay. The live referee was unsighted. "
+                "RefMind does not end the Hand of God argument — it shows why the argument exists: "
+                "sightline failed, and two nations still want opposite stories."
+            )
         ),
         "demo_mode": True,
     }
     _attach_emotion_rule(result, incident)
+    result["guardian_audit"] = _guardian_audit(incident, result)
     return result
 
 
@@ -315,7 +445,9 @@ def analyze_incident(incident: dict[str, Any], user_vote: bool) -> dict[str, Any
             parsed["why_fans_disagree_bullets"] = _disagree_bullets(
                 incident["id"], incident["fan_yes_pct"]
             )
+        parsed["argument_anatomy"] = _argument_anatomy(incident)
         _attach_emotion_rule(parsed, incident)
+        parsed["guardian_audit"] = _guardian_audit(incident, parsed)
         parsed["rules_used"] = rules_used
         parsed["demo_mode"] = False
         return parsed

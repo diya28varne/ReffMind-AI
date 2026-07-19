@@ -10,6 +10,7 @@ from app.data.og_scenes import get_og_scene
 from app.config import settings
 from app.services.ask_ref import ask_ref
 from app.services.analyzer import analyze_incident
+from app.services.controversy import analyze_custom_controversy
 from app.services.granite import test_granite_connection
 from app.services.incidents import get_fan_result, get_incident, list_incidents
 from app.services.mind_change import record_mind_change
@@ -60,6 +61,12 @@ class AskRefRequest(BaseModel):
         default=None,
         description="Optional analysis snapshot from the reveal screen",
     )
+
+
+class ControversyRequest(BaseModel):
+    facts: str = Field(..., min_length=20, max_length=2000)
+    side_a: str = Field(..., min_length=1, max_length=400)
+    side_b: str = Field(..., min_length=1, max_length=400)
 
 
 @router.get("/health")
@@ -155,6 +162,12 @@ def ask_the_ref(body: AskRefRequest) -> dict:
         return ask_ref(body.incident_id, body.question, body.analysis_context)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.post("/controversy/analyze")
+def analyze_controversy(body: ControversyRequest) -> dict:
+    """Bring-your-own controversy — four-reason disagreement breakdown."""
+    return analyze_custom_controversy(body.facts, body.side_a, body.side_b)
 
 
 # Local dev: vite proxy strips /api → routes at /

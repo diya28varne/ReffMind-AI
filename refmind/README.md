@@ -136,7 +136,7 @@ Already deployed from `diya28varne/hands-on-labs` → project **hands-on-labs**.
 | Root Directory | `refmind` |
 | Live URL | **https://hands-on-labs.vercel.app** |
 
-Optional Vercel env vars: `WATSONX_API_KEY`, `WATSONX_PROJECT_ID`, `DEMO_MODE=false`
+Optional Vercel env vars: `WATSONX_API_KEY`, `WATSONX_PROJECT_ID`, `GEMINI_API_KEY`, `DEMO_MODE=false`
 
 ### Connect IBM Granite (watsonx.ai)
 
@@ -160,6 +160,24 @@ curl http://127.0.0.1:8001/health/granite
 ```
 
 When live, responses include `"demo_mode": false`.
+
+### Connect Google Gemini (Search tools)
+
+Without a key, the Google tools panel runs in **Demo** (curated facts + links still work).
+
+1. Create an API key at [Google AI Studio](https://aistudio.google.com/apikey)
+2. Locally — add to `backend/.env`:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL_ID=gemini-2.0-flash
+DEMO_MODE=false
+```
+
+3. On **Vercel** — Project → Settings → Environment Variables → add `GEMINI_API_KEY` (and set `DEMO_MODE=false`) → Redeploy
+4. Test: `curl http://127.0.0.1:8001/health/gemini`
+
+When live, the Google tools badge shows **Live** instead of **Demo**.
 
 ---
 

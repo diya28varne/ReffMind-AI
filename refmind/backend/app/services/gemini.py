@@ -20,12 +20,14 @@ DEMO_SEARCH: dict[str, list[dict[str, str]]] = {
         {
             "title": "Hand of God — FIFA World Cup history",
             "snippet": "Diego Maradona punched the ball past Peter Shilton in the 1986 quarter-final; Tunisian referee Ali Bin Nasser allowed the goal.",
-            "source": "FIFA / historical record",
+            "source": "FIFA article",
+            "url": "https://www.fifa.com/en/articles/diego-maradona-argentina-england-hand-of-god-1986",
         },
         {
-            "title": "Maradona on the goal",
-            "snippet": "Maradona later called it 'a little with the head of Maradona, and a little with the hand of God.'",
-            "source": "Named-source quotes",
+            "title": "Maradona's Famous 8 Minutes",
+            "snippet": "Official FIFA footage of the Hand of God and Goal of the Century within the same stretch of play.",
+            "source": "FIFA YouTube",
+            "url": "https://www.youtube.com/watch?v=FRAbNlPS2MI&t=34s",
         },
     ],
     "wc2022-montiel-handball": [
@@ -33,6 +35,7 @@ DEMO_SEARCH: dict[str, list[dict[str, str]]] = {
             "title": "Montiel handball — World Cup Final 2022",
             "snippet": "VAR and on-field officials awarded France a late penalty after the ball struck Montiel's arm in a box scramble.",
             "source": "Match reports",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/qatar2022/match-center",
         },
     ],
     "wc2010-suarez-handball": [
@@ -40,6 +43,7 @@ DEMO_SEARCH: dict[str, list[dict[str, str]]] = {
             "title": "Suárez handball vs Ghana 2010",
             "snippet": "Suárez deliberately stopped a goal-bound header on the line; red card and penalty — Gyan missed, Uruguay advanced.",
             "source": "FIFA World Cup record",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/southafrica2010",
         },
     ],
     "euro2020-england-penalty": [
@@ -47,6 +51,7 @@ DEMO_SEARCH: dict[str, list[dict[str, str]]] = {
             "title": "Sterling penalty — Euro 2020 semi-final",
             "snippet": "Contact between Maehle and Sterling in extra time at Wembley divided opinion among pundits and fans.",
             "source": "Match coverage",
+            "url": "https://www.uefa.com/uefaeuro/",
         },
     ],
     "wc2022-saudi-offside": [
@@ -54,6 +59,7 @@ DEMO_SEARCH: dict[str, list[dict[str, str]]] = {
             "title": "Lautaro offside — Argentina vs Saudi Arabia",
             "snippet": "Semi-automated offside technology chalked off Argentina goals by millimetre margins in the group stage.",
             "source": "FIFA VAR / SAOT",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/qatar2022",
         },
     ],
     "ucl-2019-llorente-handball": [
@@ -61,9 +67,45 @@ DEMO_SEARCH: dict[str, list[dict[str, str]]] = {
             "title": "Llorente handball appeal — Ajax vs Tottenham 2019",
             "snippet": "Before European VAR, a late Spurs winner stood after the ball appeared to strike Llorente's arm — still debated.",
             "source": "UCL coverage",
+            "url": "https://www.uefa.com/uefachampionsleague/",
         },
     ],
 }
+
+DEMO_URL_LINKS: dict[str, list[dict[str, str]]] = {
+    "wc1986-hand-of-god": [
+        {
+            "title": "IFAB Laws of the Game",
+            "url": "https://www.theifab.com/laws/",
+            "note": "Official Law 12 handball wording",
+        },
+        {
+            "title": "FIFA — Hand of God article",
+            "url": "https://www.fifa.com/en/articles/diego-maradona-argentina-england-hand-of-god-1986",
+            "note": "Match history and quotes",
+        },
+    ],
+    "wc2022-montiel-handball": [
+        {
+            "title": "IFAB Laws of the Game",
+            "url": "https://www.theifab.com/laws/",
+            "note": "Law 12 — Handball",
+        },
+        {
+            "title": "FIFA World Cup 2022",
+            "url": "https://www.fifa.com/en/tournaments/mens/worldcup/qatar2022",
+            "note": "Tournament hub",
+        },
+    ],
+}
+
+_DEFAULT_URL_LINKS = [
+    {
+        "title": "IFAB Laws of the Game",
+        "url": "https://www.theifab.com/laws/",
+        "note": "Official rulebook",
+    },
+]
 
 DEMO_SECOND_OPINION: dict[str, str] = {
     "wc1986-hand-of-god": (
@@ -127,7 +169,8 @@ def _demo_tools(incident_id: str) -> dict[str, Any]:
         "url_context": {
             "label": "URL context",
             "status": "demo",
-            "note": "Live mode can open FIFA / IFAB pages when search needs a full article.",
+            "note": "Open these pages for the full IFAB / match context.",
+            "links": DEMO_URL_LINKS.get(incident_id, _DEFAULT_URL_LINKS),
         },
     }
 
@@ -176,6 +219,7 @@ def _extract_grounding(payload: dict[str, Any]) -> list[dict[str, str]]:
                         "title": web.get("title") or "Web source",
                         "snippet": web.get("uri") or "",
                         "source": "Google Search",
+                        "url": web.get("uri") or "",
                     }
                 )
     except (KeyError, IndexError, TypeError):
@@ -232,7 +276,8 @@ def run_gemini_tools(
             "url_context": {
                 "label": "URL context",
                 "status": "live",
-                "note": "Gemini may open linked FIFA / news pages when grounding needs the full article.",
+                "note": "Open linked FIFA / IFAB pages for full context.",
+                "links": DEMO_URL_LINKS.get(incident_id, _DEFAULT_URL_LINKS),
             },
         }
     except urllib.error.HTTPError as exc:

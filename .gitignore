@@ -5,3 +5,6 @@
 .tools/
 .vercel-cli/
 tmp/
+refmind/docs/demo-video/capture/
+refmind/docs/demo-video/*.webm
+refmind/docs/demo-video/narration.*

@@ -54,5 +54,24 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ facts, side_a, side_b }),
     }),
+  askGemini: (incidentId, question, analysisContext) =>
+    request('/gemini/ask', {
+      method: 'POST',
+      body: JSON.stringify({
+        incident_id: incidentId,
+        question,
+        analysis_context: analysisContext,
+      }),
+    }),
+  translate: (text, targetLang) =>
+    request('/gemini/translate', {
+      method: 'POST',
+      body: JSON.stringify({ text, target_lang: targetLang }),
+    }),
+  geminiVision: (incidentId, imageUrl) =>
+    request('/gemini/vision', {
+      method: 'POST',
+      body: JSON.stringify({ incident_id: incidentId, image_url: imageUrl }),
+    }),
   health: () => request('/health'),
 }

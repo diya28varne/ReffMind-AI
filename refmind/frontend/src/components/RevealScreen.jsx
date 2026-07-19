@@ -1,17 +1,22 @@
+import { useMemo, useState } from 'react'
 import AskTheRef from './AskTheRef'
+import AskGemini from './AskGemini'
 import TransparencyNote from './TransparencyNote'
 import CameraMissedCard from './CameraMissedCard'
 import ChangeDecisionPrompt from './ChangeDecisionPrompt'
 import DebateMode from './DebateMode'
 import EmotionRuleMeter from './EmotionRuleMeter'
+import FootballKickGame from './FootballKickGame'
 import FanVoteReveal from './FanVoteReveal'
 import FinalVerdict from './FinalVerdict'
 import GeminiToolsPanel from './GeminiToolsPanel'
+import GeminiVisionCard from './GeminiVisionCard'
 import GuardianAudit from './GuardianAudit'
 import IfabPageProof from './IfabPageProof'
 import PerspectiveSwitch from './PerspectiveSwitch'
 import PressureOnReferee from './PressureOnReferee'
 import RefTrustScore from './RefTrustScore'
+import TranslateBar from './TranslateBar'
 import WhyArgumentsLast from './WhyArgumentsLast'
 import WhyFansDisagree from './WhyFansDisagree'
 
@@ -34,14 +39,33 @@ function buildSpeakTexts(result) {
 }
 
 export default function RevealScreen({ result, onNext, onRestart, hasNext, onTrustUpdate }) {
+  const [translated, setTranslated] = useState(null)
   const fanAgreementPct =
     result.fan_agreement_pct ??
     (result.user_vote ? result.fan_yes_pct : result.fan_no_pct)
 
   const speak = buildSpeakTexts(result)
+  const translateBundle = useMemo(
+    () => ({
+      verdict: speak.verdict,
+      camera: speak.camera,
+      fansDisagree: speak.fansDisagree,
+      vision: result.gemini_vision?.description || '',
+    }),
+    [speak.verdict, speak.camera, speak.fansDisagree, result.gemini_vision?.description],
+  )
+
+  const verdictSpeak = translated?.verdict || speak.verdict
+  const cameraSpeak = translated?.camera || speak.camera
+  const fansSpeak = translated?.fansDisagree || speak.fansDisagree
+  const visionOverride = translated?.vision
+    ? { ...result.gemini_vision, description: translated.vision }
+    : result.gemini_vision
 
   return (
     <div className="space-y-5">
+      <TranslateBar texts={translateBundle} onTranslated={setTranslated} />
+
       <FanVoteReveal
         userVote={result.user_vote}
         fanYesPct={result.fan_yes_pct}
@@ -65,17 +89,21 @@ export default function RevealScreen({ result, onNext, onRestart, hasNext, onTru
       <CameraMissedCard
         bullets={result.camera_missed_bullets}
         narrative={result.camera_analysis}
-        speakText={speak.camera}
+        speakText={cameraSpeak}
         ogScene={result.og_scene}
       />
+
+      <GeminiVisionCard vision={visionOverride} />
 
       <WhyFansDisagree
         bullets={result.why_fans_disagree_bullets}
         narrative={result.why_fans_disagree}
-        speakText={speak.fansDisagree}
+        speakText={fansSpeak}
       />
 
       <DebateMode splitVerdict={result.split_verdict} />
+
+      <FootballKickGame incidentId={result.incident_id} />
 
       <ChangeDecisionPrompt
         incidentId={result.incident_id}
@@ -88,19 +116,25 @@ export default function RevealScreen({ result, onNext, onRestart, hasNext, onTru
         verdict={result.verdict}
         confidence={result.confidence}
         confidencePct={result.confidence_pct}
-        reasoning={result.verdict_reasoning}
-        speakText={speak.verdict}
+        reasoning={
+          translated?.verdict
+            ? translated.verdict.replace(/^Final verdict:\s*/i, '')
+            : result.verdict_reasoning
+        }
+        speakText={verdictSpeak}
       />
 
       <GuardianAudit audit={result.guardian_audit} />
 
       <GeminiToolsPanel tools={result.gemini_tools} />
 
+      <AskGemini incidentId={result.incident_id} analysisContext={result} />
+
       <AskTheRef incidentId={result.incident_id} analysisContext={result} />
 
       {result.demo_mode && (
         <p className="text-center text-xs text-gray-500">
-          Demo mode — add Watsonx credentials for live Granite analysis
+          Demo mode — add Watsonx / Gemini credentials for live AI
         </p>
       )}
 

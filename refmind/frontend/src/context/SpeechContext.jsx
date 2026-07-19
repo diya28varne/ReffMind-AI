@@ -22,14 +22,22 @@ export function SpeechProvider({ children }) {
     return () => window.speechSynthesis?.removeEventListener('voiceschanged', loadVoices)
   }, [])
 
-  const pickVoice = useCallback(() => {
+  const pickVoice = useCallback((langPref = 'en') => {
     const voices = window.speechSynthesis.getVoices()
+    const lang = (langPref || 'en').toLowerCase()
     return (
-      voices.find((v) => v.lang.startsWith('en') && v.name.includes('Google')) ||
+      voices.find((v) => v.lang.toLowerCase().startsWith(lang) && /google/i.test(v.name)) ||
+      voices.find((v) => v.lang.toLowerCase().startsWith(lang)) ||
+      voices.find((v) => v.lang.startsWith('en') && /google/i.test(v.name)) ||
       voices.find((v) => v.lang.startsWith('en-GB')) ||
       voices.find((v) => v.lang.startsWith('en')) ||
       null
     )
+  }, [])
+
+  const speechLangRef = useRef('en')
+  const setSpeechLang = useCallback((lang) => {
+    speechLangRef.current = lang || 'en'
   }, [])
 
   const stop = useCallback(() => {
@@ -46,7 +54,9 @@ export function SpeechProvider({ children }) {
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.rate = 0.95
     utterance.pitch = 1
-    const voice = pickVoice()
+    const lang = speechLangRef.current || 'en'
+    utterance.lang = lang === 'en' ? 'en-GB' : lang
+    const voice = pickVoice(lang)
     if (voice) utterance.voice = voice
 
     utterance.onstart = () => {
@@ -136,9 +146,10 @@ export function SpeechProvider({ children }) {
       pause,
       resume,
       stop,
+      setSpeechLang,
       isActive: (id) => activeId === id,
     }),
-    [activeId, status, error, highlightRange, speak, pause, resume, stop],
+    [activeId, status, error, highlightRange, speak, pause, resume, stop, setSpeechLang],
   )
 
   return <SpeechContext.Provider value={value}>{children}</SpeechContext.Provider>

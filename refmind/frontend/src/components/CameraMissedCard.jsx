@@ -1,7 +1,11 @@
+import { useState } from 'react'
 import HighlightedText from './HighlightedText'
 import VoiceReaderButton from './VoiceReaderButton'
 import { useSpeech } from '../context/SpeechContext'
 
+/**
+ * Camera miss card + in-page YouTube embed for the OG clip.
+ */
 export default function CameraMissedCard({
   bullets,
   narrative,
@@ -9,12 +13,18 @@ export default function CameraMissedCard({
   ogScene,
   delay = 600,
 }) {
+  const [play, setPlay] = useState(false)
   const items = bullets?.length ? bullets : narrative ? [narrative] : []
   const { isActive, highlightRange } = useSpeech()
   const active = isActive('camera-missed')
   const fullText = speakText || items.join('. ')
   const hasScene = Boolean(ogScene?.image)
-  const hasClip = Boolean(ogScene?.video_url)
+  const videoId = ogScene?.video_id
+  const start = Number(ogScene?.video_start || 0)
+  const hasClip = Boolean(ogScene?.video_url || videoId)
+  const embedSrc = videoId
+    ? `https://www.youtube.com/embed/${videoId}?start=${start}&rel=0&modestbranding=1${play ? '&autoplay=1' : ''}`
+    : null
 
   return (
     <section
@@ -23,7 +33,7 @@ export default function CameraMissedCard({
       aria-labelledby="camera-missed-heading"
       data-gravity
     >
-      {hasScene && (
+      {hasScene && !play && (
         <>
           <img
             src={ogScene.image}
@@ -34,7 +44,7 @@ export default function CameraMissedCard({
           <div className="absolute inset-0 bg-pitch-900/82 backdrop-blur-[2px]" />
         </>
       )}
-      {!hasScene && <div className="absolute inset-0 bg-pitch-800" />}
+      {(!hasScene || play) && <div className="absolute inset-0 bg-pitch-800" />}
 
       <div className="relative z-10 p-6">
         <div className="flex items-start justify-between gap-3 mb-4">
@@ -51,8 +61,18 @@ export default function CameraMissedCard({
 
         {(hasScene || hasClip) && (
           <div className="mb-5 rounded-lg overflow-hidden border border-white/10 bg-pitch-900/50">
-            {hasScene ? (
-              <div className="relative aspect-video max-h-44 sm:max-h-52">
+            {play && embedSrc ? (
+              <div className="relative aspect-video">
+                <iframe
+                  title={ogScene?.caption || 'OG broadcast clip'}
+                  src={embedSrc}
+                  className="absolute inset-0 h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : hasScene ? (
+              <div className="relative aspect-video max-h-52">
                 <img
                   src={ogScene.image}
                   alt={ogScene.alt || 'Original broadcast scene'}
@@ -64,16 +84,27 @@ export default function CameraMissedCard({
                     {ogScene.label || 'OG scene'} · {ogScene.broadcast || 'Live broadcast'}
                   </p>
                   <p className="text-sm text-white/90 leading-snug">{ogScene.caption}</p>
-                  {hasClip && (
-                    <a
-                      href={ogScene.video_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 mt-2 text-xs text-accent-gold/90 hover:text-accent-gold underline underline-offset-2"
-                    >
-                      Watch OG clip ↗
-                    </a>
-                  )}
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    {videoId && (
+                      <button
+                        type="button"
+                        onClick={() => setPlay(true)}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-pitch-900 bg-accent-gold px-2.5 py-1 rounded-md hover:bg-yellow-400 transition-colors"
+                      >
+                        ▶ Play in page
+                      </button>
+                    )}
+                    {ogScene.video_url && (
+                      <a
+                        href={ogScene.video_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-accent-gold/90 hover:text-accent-gold underline underline-offset-2"
+                      >
+                        Open on YouTube ↗
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -82,33 +113,35 @@ export default function CameraMissedCard({
                   {ogScene.label || 'OG scene'} · {ogScene.broadcast || 'Live broadcast'}
                 </p>
                 <p className="text-sm text-white/90 leading-snug mb-2">{ogScene.caption}</p>
-                <a
-                  href={ogScene.video_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-accent-gold/90 hover:text-accent-gold underline underline-offset-2"
+                {videoId && (
+                  <button
+                    type="button"
+                    onClick={() => setPlay(true)}
+                    className="text-xs font-semibold text-pitch-900 bg-accent-gold px-2.5 py-1 rounded-md"
+                  >
+                    ▶ Play in page
+                  </button>
+                )}
+              </div>
+            )}
+            {play && (
+              <div className="px-3 py-2 border-t border-white/10 flex justify-between items-center">
+                <p className="text-[10px] text-gray-400 uppercase tracking-wider">YouTube · in-page</p>
+                <button
+                  type="button"
+                  onClick={() => setPlay(false)}
+                  className="text-xs text-accent-gold hover:underline"
                 >
-                  Watch OG clip ↗
-                </a>
+                  Show still
+                </button>
               </div>
             )}
           </div>
         )}
 
-        <ul className="space-y-3">
-          {items.map((item, i) => (
-            <li key={i} className="flex gap-3 text-white text-sm leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]">
-              <span className="text-accent-gold shrink-0 mt-0.5">•</span>
-              <span>
-                {active && i === 0 ? (
-                  <HighlightedText text={item} highlightRange={highlightRange} isActive={active} />
-                ) : (
-                  item
-                )}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <p className="text-white text-sm leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]">
+          <HighlightedText text={fullText} highlightRange={highlightRange} isActive={active} />
+        </p>
       </div>
     </section>
   )

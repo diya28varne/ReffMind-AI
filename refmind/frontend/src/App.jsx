@@ -147,7 +147,7 @@ export default function App() {
       </main>
 
       <footer className="text-center py-8 text-xs text-gray-400">
-        IBM Granite · Docling · Google Gemini · Google Search · Gravity
+        IBM Granite · Google Gemini · YouTube · Translate · Vision · Gravity
       </footer>
     </div>
   )

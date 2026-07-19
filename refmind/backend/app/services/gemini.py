@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import logging
 import urllib.error
+import urllib.parse
 import urllib.request
 from typing import Any
 
@@ -323,3 +324,216 @@ def test_gemini_connection() -> dict[str, Any]:
             "error": str(exc),
             "model_id": settings.gemini_model_id,
         }
+
+
+DEMO_VISION: dict[str, str] = {
+    "wc1986-hand-of-god": (
+        "Gemini Vision (demo): A contested leap between a shorter attacker in blue "
+        "and a taller keeper in white — the frame makes hand contact hard to read live, "
+        "exactly the sightline problem this argument still lives on."
+    ),
+    "wc2022-montiel-handball": (
+        "Gemini Vision (demo): Chaotic box scramble — arm contact is only clear after freeze-frame, "
+        "not at full-speed referee angle."
+    ),
+}
+
+DEMO_ASK: dict[str, str] = {
+    "default": (
+        "Gemini demo: I'm looking at public match context plus your incident card. "
+        "Ask about sightline, rules, or why fans still argue — I won't invent IFAB page numbers."
+    ),
+}
+
+
+def analyze_scene_vision(incident: dict[str, Any], image_url: str | None = None) -> dict[str, Any]:
+    """Gemini Vision — describe what the OG scene still reveals."""
+    incident_id = incident["id"]
+    demo_text = DEMO_VISION.get(
+        incident_id,
+        f"Gemini Vision (demo): Still frame from {incident['title']} — contact and angle are clearer on replay than live.",
+    )
+    caption = (incident.get("camera_context") or {}).get("broadcast_angle", "")
+    if not gemini_available():
+        return {
+            "provider": "Google Gemini Vision",
+            "demo_mode": True,
+            "description": demo_text,
+            "caption_hint": caption,
+        }
+
+    prompt = (
+        "You are helping fans understand a football referee controversy. "
+        "Describe what a broadcast still likely shows in 2–3 sentences. "
+        "Focus on sightline / body positions — do not invent IFAB pages.\n"
+        f"Incident: {incident['title']}\n"
+        f"Match: {incident['match']}\n"
+        f"Known angle: {caption}\n"
+        f"Image URL (if useful): {image_url or 'n/a'}\n"
+    )
+    try:
+        # Text-only live call keeps serverless simple; image URL passed in prompt context.
+        payload = _call_gemini(prompt, use_search=False)
+        text = _extract_text(payload) or demo_text
+        return {
+            "provider": "Google Gemini Vision",
+            "demo_mode": False,
+            "description": text,
+            "caption_hint": caption,
+        }
+    except Exception as exc:
+        logger.warning("Gemini vision failed: %s", exc)
+        return {
+            "provider": "Google Gemini Vision",
+            "demo_mode": True,
+            "description": demo_text,
+            "caption_hint": caption,
+            "error": str(exc),
+        }
+
+
+def ask_gemini(
+    incident: dict[str, Any],
+    question: str,
+    analysis: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Ask Gemini chat (public web + incident context) — separate from Ask the Ref."""
+    q = (question or "").strip()
+    if not q:
+        return {"answer": "Ask a question about this incident.", "demo_mode": True, "confidence": 0.2}
+
+    if not gemini_available():
+        opinion = DEMO_SECOND_OPINION.get(incident["id"], DEMO_ASK["default"])
+        return {
+            "answer": f"{DEMO_ASK['default']}\n\nOn this call: {opinion}",
+            "demo_mode": True,
+            "confidence": 0.55,
+            "provider": "Google Gemini",
+        }
+
+    prompt = (
+        "Answer briefly for football fans. Use Google Search if helpful. "
+        "Do not invent IFAB page numbers.\n"
+        f"Incident: {incident['title']}\n"
+        f"Description: {incident['description']}\n"
+        f"Question: {q}\n"
+    )
+    if analysis:
+        prompt += f"RefMind verdict so far: {analysis.get('verdict', '')}\n"
+    try:
+        payload = _call_gemini(prompt, use_search=True)
+        text = _extract_text(payload) or DEMO_ASK["default"]
+        return {
+            "answer": text,
+            "demo_mode": False,
+            "confidence": 0.7,
+            "provider": "Google Gemini",
+        }
+    except Exception as exc:
+        logger.warning("Ask Gemini failed: %s", exc)
+        return {
+            "answer": DEMO_ASK["default"],
+            "demo_mode": True,
+            "confidence": 0.4,
+            "provider": "Google Gemini",
+            "error": str(exc),
+        }
+
+
+# Lightweight demo translations for key languages without an API key.
+_DEMO_LANG = {
+    "es": {"name": "Español"},
+    "hi": {"name": "हिन्दी"},
+    "pt": {"name": "Português"},
+    "fr": {"name": "Français"},
+}
+
+
+def _mymemory_translate(text: str, lang: str) -> str | None:
+    """Free public translate API (no key) — used when Gemini is not configured."""
+    code = (lang or "en")[:2]
+    if not text or code == "en":
+        return text
+    # MyMemory ~500 char limit per call — chunk by sentences when needed
+    chunks: list[str] = []
+    remaining = text
+    while remaining:
+        if len(remaining) <= 450:
+            chunks.append(remaining)
+            break
+        cut = remaining.rfind(". ", 0, 450)
+        if cut < 80:
+            cut = 450
+        else:
+            cut += 1
+        chunks.append(remaining[:cut].strip())
+        remaining = remaining[cut:].strip()
+
+    outs: list[str] = []
+    for chunk in chunks:
+        if not chunk:
+            continue
+        q = urllib.parse.quote(chunk)
+        url = f"https://api.mymemory.translated.net/get?q={q}&langpair=en|{code}"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "RefMind/1.0"})
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            translated = (data.get("responseData") or {}).get("translatedText") or ""
+            translated = translated.strip()
+            if not translated or translated.lower() == chunk.lower():
+                return None
+            # Skip quota / error strings
+            if "MYMEMORY WARNING" in translated.upper():
+                return None
+            outs.append(translated)
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError, ValueError) as exc:
+            logger.warning("MyMemory translate failed: %s", exc)
+            return None
+    return " ".join(outs).strip() or None
+
+
+def translate_text(text: str, target_lang: str) -> dict[str, Any]:
+    """Translate UI text via Gemini, or free MyMemory when no API key."""
+    text = (text or "").strip()
+    lang = (target_lang or "en").lower()[:5]
+    if not text or lang in ("en", "en-us", "en-gb"):
+        return {"text": text, "lang": "en", "demo_mode": False, "provider": "passthrough"}
+
+    if gemini_available():
+        prompt = (
+            f"Translate the following football explainability text into language code '{lang}'. "
+            "Keep names and IFAB law numbers unchanged. Return only the translation.\n\n"
+            f"{text}"
+        )
+        try:
+            payload = _call_gemini(prompt, use_search=False)
+            out = _extract_text(payload) or text
+            return {
+                "text": out,
+                "lang": lang,
+                "demo_mode": False,
+                "provider": "Google Gemini Translate",
+            }
+        except Exception as exc:
+            logger.warning("Gemini translate failed, trying free fallback: %s", exc)
+
+    # No Gemini key (or Gemini failed) — free public translator so the UI still works
+    free = _mymemory_translate(text, lang)
+    if free:
+        return {
+            "text": free,
+            "lang": lang,
+            "demo_mode": False,
+            "provider": "MyMemory Translate",
+            "note": None,
+        }
+
+    meta = _DEMO_LANG.get(lang[:2], {"name": lang})
+    return {
+        "text": text,
+        "lang": lang,
+        "demo_mode": True,
+        "provider": "passthrough",
+        "note": f"Could not reach translator for {meta.get('name', lang)}. Try again, or add GEMINI_API_KEY.",
+    }

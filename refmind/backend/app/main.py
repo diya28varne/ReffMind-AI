@@ -11,7 +11,13 @@ from app.config import settings
 from app.services.ask_ref import ask_ref
 from app.services.analyzer import analyze_incident
 from app.services.controversy import analyze_custom_controversy
-from app.services.gemini import run_gemini_tools, test_gemini_connection
+from app.services.gemini import (
+    analyze_scene_vision,
+    ask_gemini,
+    run_gemini_tools,
+    test_gemini_connection,
+    translate_text,
+)
 from app.services.granite import test_granite_connection
 from app.services.incidents import get_fan_result, get_incident, list_incidents
 from app.services.mind_change import record_mind_change
@@ -68,6 +74,22 @@ class ControversyRequest(BaseModel):
     facts: str = Field(..., min_length=20, max_length=2000)
     side_a: str = Field(..., min_length=1, max_length=400)
     side_b: str = Field(..., min_length=1, max_length=400)
+
+
+class AskGeminiRequest(BaseModel):
+    incident_id: str
+    question: str = Field(..., min_length=1, max_length=500)
+    analysis_context: dict | None = None
+
+
+class TranslateRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=4000)
+    target_lang: str = Field(default="es", min_length=2, max_length=8)
+
+
+class VisionRequest(BaseModel):
+    incident_id: str
+    image_url: str | None = None
 
 
 @router.get("/health")
@@ -135,6 +157,7 @@ def analyze(incident_id: str, body: AnalyzeRequest) -> dict:
     fan = get_fan_result(incident, body.user_vote)
     analysis = analyze_incident(incident, body.user_vote)
     gemini_tools = run_gemini_tools(incident, analysis=analysis)
+    vision = analyze_scene_vision(incident, str(get_og_scene(incident).get("image") or "") or None)
 
     return {
         "incident_id": incident_id,
@@ -148,6 +171,7 @@ def analyze(incident_id: str, body: AnalyzeRequest) -> dict:
         "description": incident["description"],
         "question": incident["question"],
         "gemini_tools": gemini_tools,
+        "gemini_vision": vision,
         **fan,
         **analysis,
     }
@@ -179,6 +203,31 @@ def ask_the_ref(body: AskRefRequest) -> dict:
 def analyze_controversy(body: ControversyRequest) -> dict:
     """Bring-your-own controversy — four-reason disagreement breakdown."""
     return analyze_custom_controversy(body.facts, body.side_a, body.side_b)
+
+
+@router.post("/gemini/ask")
+def gemini_ask(body: AskGeminiRequest) -> dict:
+    incident = get_incident(body.incident_id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+    return ask_gemini(incident, body.question, body.analysis_context)
+
+
+@router.post("/gemini/translate")
+def gemini_translate(body: TranslateRequest) -> dict:
+    return translate_text(body.text, body.target_lang)
+
+
+@router.post("/gemini/vision")
+def gemini_vision(body: VisionRequest) -> dict:
+    incident = get_incident(body.incident_id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+    image = body.image_url
+    if not image:
+        scene = get_og_scene(incident)
+        image = str(scene.get("image") or "") or None
+    return analyze_scene_vision(incident, image)
 
 
 # Local dev: vite proxy strips /api → routes at /

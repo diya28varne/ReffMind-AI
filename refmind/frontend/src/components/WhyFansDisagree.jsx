@@ -8,7 +8,7 @@ export default function WhyFansDisagree({ bullets, narrative, speakText, delay =
   const active = isActive('why-fans-disagree')
   const fullText = speakText || items.join('. ')
 
-  if (!items.length) return null
+  if (!items.length && !speakText) return null
 
   return (
     <section
@@ -25,20 +25,9 @@ export default function WhyFansDisagree({ bullets, narrative, speakText, delay =
         </div>
         <VoiceReaderButton sectionId="why-fans-disagree" speakText={fullText} />
       </div>
-      <ul className="space-y-3">
-        {items.map((item, i) => (
-          <li key={i} className="flex gap-3 text-gray-300 text-sm leading-relaxed">
-            <span className="text-gray-500 shrink-0 mt-0.5">•</span>
-            <span>
-              {active && i === 0 ? (
-                <HighlightedText text={item} highlightRange={highlightRange} isActive={active} />
-              ) : (
-                item
-              )}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <p className="text-gray-300 text-sm leading-relaxed">
+        <HighlightedText text={fullText} highlightRange={highlightRange} isActive={active} />
+      </p>
     </section>
   )
 }

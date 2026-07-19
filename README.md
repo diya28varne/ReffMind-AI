@@ -10,7 +10,8 @@ This repo is part of the **IBM SkillsBuild AI Builders Challenge** and is your s
 - Check out the **TORCS Lab** → this is the **May Challenge lab**
 - Check out the **Football Lab** → this is the **June Challenge lab**
 - **RefMind** (June challenge submission) → [`refmind/README.md`](refmind/README.md) — AI referee explainability demo  
-  **Live demo:** https://hands-on-labs.vercel.app/?demo=wc1986-hand-of-god
+  **Live demo:** https://reffmind.vercel.app/?demo=wc1986-hand-of-god  
+  (also: https://reffmind-ai.vercel.app/?demo=wc1986-hand-of-god)
 - Work through the folders and try things out as you go
 - Use `RESULTS.md` in your fork to track what you learn
 
